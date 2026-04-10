@@ -1,6 +1,8 @@
-# ── CONFIG ── 修改为你的本地路径 ──────────────
-KETOD_TRAIN = "data/ketod/train_features.csv"
-KETOD_TEST  = "data/ketod/test_features.csv"
+# ── CONFIG ────────────────────────────────────
+TRAIN_CSV   = "data/dstc11/train.csv"
+TEST_CSV    = "data/dstc11/val.csv"
+TRAIN_OUT   = "data/dstc11/train_features.csv"
+TEST_OUT    = "data/dstc11/test_features.csv"
 # ──────────────────────────────────────────────
 """
 extract_features_dstc11.py

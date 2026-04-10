@@ -1,6 +1,8 @@
-# ── CONFIG ── 修改为你的本地路径 ──────────────
-KETOD_TRAIN = "data/ketod/train_features.csv"
-KETOD_TEST  = "data/ketod/test_features.csv"
+# ── CONFIG ────────────────────────────────────
+TRAIN_CSV   = "data/ketod/train_full.csv"
+TEST_CSV    = "data/ketod/test_full.csv"
+CHECKPOINT  = "outputs/MHA-trained/MHA_weighted_e35_f10.6139.pt"
+OUTPUT_CSV  = "results/mha_predictions.csv"
 # ──────────────────────────────────────────────
 """
 mha_inference.py  —  Step 6 前置

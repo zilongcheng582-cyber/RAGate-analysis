@@ -1,6 +1,7 @@
-# ── CONFIG ── 修改为你的本地路径 ──────────────
-KETOD_TRAIN = "data/ketod/train_features.csv"
-KETOD_TEST  = "data/ketod/test_features.csv"
+# ── CONFIG ────────────────────────────────────
+LOGS_JSON   = "data/dstc9/train/logs.json"
+LABELS_JSON = "data/dstc9/train/labels.json"
+OUTPUT_CSV  = "data/dstc9/train/train_dstc9.csv"
 # ──────────────────────────────────────────────
 import json
 import csv

@@ -1,6 +1,7 @@
-# ── CONFIG ── 修改为你的本地路径 ──────────────
-KETOD_TRAIN = "data/ketod/train_features.csv"
-KETOD_TEST  = "data/ketod/test_features.csv"
+# ── CONFIG ────────────────────────────────────
+TRAIN_CSV   = "data/ketod/train_full.csv"
+TEST_CSV    = "data/ketod/test_full.csv"
+CKPT_DIR    = "outputs/MHA-trained"
 # ──────────────────────────────────────────────
 import math
 import torch

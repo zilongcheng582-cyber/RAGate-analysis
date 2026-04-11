@@ -74,20 +74,7 @@ python mha/mha_inference.py
 MHA is adapted from the original RAGate implementation.
 Modifications: replaced `torchtext` with a custom `Vocab` class, added `CosineAnnealingLR` scheduler, switched to weighted cross-entropy loss.
 
-### 3. MHA Cross-dataset Transfer (DSTC9 → KETOD)
-
-```bash
-# Train MHA on DSTC9 (requires GPU)
-python mha/train_MHA_dstc9.py --loss weighted --epochs 50
-
-# Inference on KETOD test
-python mha/mha_inference_dstc9_on_ketod.py
-
-# Evaluate + paper-ready output
-python analysis/evaluate_mha_transfer.py
-```
-
-### 4. LR Probing (all datasets)
+### 3. LR Probing (all datasets)
 
 ```bash
 # Main ablation experiment (Table 1)
@@ -103,7 +90,7 @@ python probing/threshold_tuning.py
 python probing/feature_importance_spearman.py
 ```
 
-### 5. Analysis
+### 4. Analysis
 
 ```bash
 # Cross-dataset transfer (Table 3)
@@ -114,9 +101,6 @@ python analysis/agreement_analysis.py
 
 # Counterfactual perturbation
 python analysis/counterfactual_analysis.py
-
-# MHA transfer evaluation
-python analysis/evaluate_mha_transfer.py
 ```
 
 ---
@@ -129,8 +113,7 @@ Pre-computed results are in `results/`. Key numbers:
 |---|---|
 | Feature ablation | Position only F1 ≈ random on DSTC9/11; No position = Full |
 | Spearman ρ | DSTC9 vs DSTC11: ρ=+0.94 (p<0.001); KETOD vs DSTC: ρ≈−0.43 |
-| LR cross-dataset transfer | DSTC→KETOD minority F1=0.00; gap=+0.33 (severe) |
-| MHA cross-dataset transfer | DSTC9→KETOD minority F1=0.12; substantially degraded from in-domain (0.76) |
+| Cross-dataset transfer | DSTC→KETOD minority F1=0.00; gap=+0.33 (severe) |
 | LR-MHA agreement | κ=0.25; MHA counterfactual flip rate=2.4% vs LR 16.6% |
 
 ---
@@ -167,7 +150,5 @@ Pre-computed results are in `results/`. Key numbers:
 
 ## Acknowledgements
 
-RAGate-MHA architecture is based on [RAGate](https://github.com/...)(original paper citation).
-KETOD, DSTC9, and DSTC11 datasets are used under their respective licenses.
 RAGate-MHA architecture is based on [RAGate](https://github.com/...)(original paper citation).
 KETOD, DSTC9, and DSTC11 datasets are used under their respective licenses.

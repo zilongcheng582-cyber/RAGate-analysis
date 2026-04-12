@@ -101,6 +101,9 @@ python analysis/agreement_analysis.py
 
 # Counterfactual perturbation
 python analysis/counterfactual_analysis.py
+
+# Semantic baseline (capacity robustness check)
+python analysis/semantic_baseline.py
 ```
 
 ---
@@ -115,6 +118,7 @@ Pre-computed results are in `results/`. Key numbers:
 | Spearman ρ | DSTC9 vs DSTC11: ρ=+0.94 (p<0.001); KETOD vs DSTC: ρ≈−0.43 |
 | Cross-dataset transfer | DSTC→KETOD minority F1=0.00; gap=+0.33 (severe) |
 | LR-MHA agreement | κ=0.25; MHA counterfactual flip rate=2.4% vs LR 16.6% |
+| Semantic baseline | Semantic LR DSTC→KETOD minority F1=0.12–0.13; transfer still fails vs in-domain 0.36 |
 
 ---
 

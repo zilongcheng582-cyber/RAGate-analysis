@@ -1,0 +1,10 @@
+         model train_on test_on  in_domain  macro_f1  minority_f1
+0  Semantic-LR    KETOD   KETOD       True    0.5914       0.3561
+1  Semantic-LR    KETOD   DSTC9      False    0.4545       0.1839
+2  Semantic-LR    KETOD  DSTC11      False    0.3472       0.1033
+3  Semantic-LR    DSTC9   KETOD      False    0.4453       0.1186
+4  Semantic-LR    DSTC9   DSTC9       True    0.6654       0.5708
+5  Semantic-LR    DSTC9  DSTC11      False    0.6176       0.5730
+6  Semantic-LR   DSTC11   KETOD      False    0.3901       0.1335
+7  Semantic-LR   DSTC11   DSTC9      False    0.5672       0.4513
+8  Semantic-LR   DSTC11  DSTC11       True    0.8366       0.8419

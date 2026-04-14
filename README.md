@@ -24,7 +24,17 @@ Download and place in the following structure:
 pip install torch scikit-learn pandas numpy scipy matplotlib seaborn datasets tqdm
 ```
 
-Tested on Python 3.12, PyTorch 2.5.1.
+For the semantic baseline only:
+```bash
+pip install sentence-transformers
+```
+
+For the BERT transfer experiment (requires GPU):
+```bash
+pip install transformers accelerate
+```
+
+Tested on Python 3.12, PyTorch 2.5.1 (LR/MHA experiments) and PyTorch 2.7.0 + CUDA 12.8 (BERT experiment, RTX 5090).
 
 ---
 
@@ -93,7 +103,7 @@ python probing/feature_importance_spearman.py
 ### 4. Analysis
 
 ```bash
-# Cross-dataset transfer (Table 3)
+# Cross-dataset transfer — structural LR (Table 3)
 python analysis/cross_dataset_transfer.py
 
 # LR vs MHA agreement (requires mha_predictions.csv)
@@ -102,9 +112,38 @@ python analysis/agreement_analysis.py
 # Counterfactual perturbation
 python analysis/counterfactual_analysis.py
 
-# Semantic baseline (capacity robustness check)
+# MHA proxy check on LR false negatives
+python analysis/proxy_check.py
+
+# Semantic baseline — capacity robustness check (Section 4.3)
+# Requires train_full.csv (raw text), not train_features.csv
+pip install sentence-transformers
 python analysis/semantic_baseline.py
+
+# BERT cross-dataset transfer — progressive capacity check (Section 4.3)
+# Requires GPU; downloads bert-base-uncased from HuggingFace
+# For mainland China: export HF_ENDPOINT=https://hf-mirror.com
+pip install transformers accelerate
+python analysis/bert_transfer.py \
+    --ketod-train  data/ketod/train_full.csv \
+    --ketod-test   data/ketod/test_full.csv \
+    --dstc9-train  data/dstc9/train_dstc9.csv \
+    --dstc9-test   data/dstc9/test_dstc9.csv \
+    --dstc11-train data/dstc11/train.csv \
+    --dstc11-test  data/dstc11/val.csv \
+    --output-dir   results/
 ```
+
+> **Note on DSTC9 training file:** `train_dstc9.csv` contains malformed rows due to unescaped quotes in dialogue text. If you encounter a CSV parse error, run the following to produce a cleaned version before proceeding:
+> ```bash
+> python -c "
+> import pandas as pd
+> df = pd.read_csv('data/dstc9/train_dstc9.csv', engine='python', on_bad_lines='skip')
+> df.to_csv('data/dstc9/train_dstc9_fixed.csv', index=False)
+> print(f'Saved {len(df)} rows')
+> "
+> ```
+> Then replace `--dstc9-train data/dstc9/train_dstc9.csv` with `--dstc9-train data/dstc9/train_dstc9_fixed.csv`.
 
 ---
 
@@ -116,9 +155,29 @@ Pre-computed results are in `results/`. Key numbers:
 |---|---|
 | Feature ablation | Position only F1 ≈ random on DSTC9/11; No position = Full |
 | Spearman ρ | DSTC9 vs DSTC11: ρ=+0.94 (p<0.001); KETOD vs DSTC: ρ≈−0.43 |
-| Cross-dataset transfer | DSTC→KETOD minority F1=0.00; gap=+0.33 (severe) |
+| Cross-dataset transfer (structural LR) | DSTC→KETOD minority F1=0.00; gap=+0.33 (severe) |
+| Cross-dataset transfer (semantic LR) | DSTC→KETOD minority F1=0.12–0.13; transfer still fails vs in-domain 0.36 |
+| Cross-dataset transfer (BERT) | DSTC→KETOD minority F1=0.07–0.10; lower than semantic baseline; within-DSTC intact |
 | LR-MHA agreement | κ=0.25; MHA counterfactual flip rate=2.4% vs LR 16.6% |
-| Semantic baseline | Semantic LR DSTC→KETOD minority F1=0.12–0.13; transfer still fails vs in-domain 0.36 |
+
+Results files:
+
+```
+results/
+├── lr_results.csv
+├── transfer_results.csv
+├── spearman_rho_results.csv
+├── feature_importance.csv
+├── position_shuffle_results.csv
+├── threshold_tuning_results.csv
+├── agreement_results.csv
+├── counterfactual_results.csv
+├── mha_predictions.csv
+├── semantic_results.csv        ← semantic baseline transfer matrix
+├── semantic_summary.txt        ← paper-ready numbers (semantic)
+├── bert_results.csv            ← BERT transfer matrix
+└── bert_summary.txt            ← paper-ready numbers (BERT)
+```
 
 ---
 

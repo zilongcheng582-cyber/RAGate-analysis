@@ -1,0 +1,14 @@
+BERT TRANSFER — PAPER-READY SUMMARY
+======================================================
+
+DSTC9→KETOD
+  BERT:          Macro=0.4503, Minority=0.0978
+  Structural LR: Macro=0.4661, Minority=0.0000
+  Δ Minority:    +0.0978
+  Semantic LR:   Macro=0.4453, Minority=0.1186
+
+DSTC11→KETOD
+  BERT:          Macro=0.4704, Minority=0.0717
+  Structural LR: Macro=0.4661, Minority=0.0000
+  Δ Minority:    +0.0717
+  Semantic LR:   Macro=0.3901, Minority=0.1335

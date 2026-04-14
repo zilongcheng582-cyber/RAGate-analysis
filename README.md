@@ -204,7 +204,8 @@ results/
 
 ```bibtex
 @article{
-  title={Annotation Shortcuts: Lightweight Probing Reveals Incompatibility in Knowledge-Gating Benchmarks},
+  title={Shortcuts or Semantics? Probing Knowledge-Gating Benchmarks
+via Lightweight Feature Analysis},
   year={2026}
 }
 ```

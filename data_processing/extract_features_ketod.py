@@ -1,3 +1,9 @@
+# ── CONFIG ────────────────────────────────────
+TRAIN_JSON  = "data/ketod/train.json"
+TEST_JSON   = "data/ketod/test.json"
+TRAIN_OUT   = "data/ketod/train_features.csv"
+TEST_OUT    = "data/ketod/test_features.csv"
+# ──────────────────────────────────────────────
 """
 extract_features_ketod.py
 从 KETOD 原始 JSON 提取 10 个特征，输出 CSV 供 LR 训练。
@@ -34,12 +40,13 @@ def extract_features_from_dialogue(dialogue):
 
     prev_sys_text = ""
     consecutive_sys = 0
-    user_turn_idx = 0  # 当前是第几个 USER turn（0-indexed）
+    user_turn_idx = 0  # 当前是第几个 USER turn（1-indexed after increment）
 
     for i, turn in enumerate(turns):
         if turn['speaker'] == 'USER':
             user_turn_idx += 1
-            consecutive_sys = 0
+            # ── FIX: do NOT reset consecutive_sys here ──
+            # consecutive_sys accumulates system turns since the last user turn
             user_text = turn['utterance']
 
             # 下一个是 SYSTEM turn，预取
@@ -71,7 +78,7 @@ def extract_features_from_dialogue(dialogue):
                 # 7. dialogue_len_log
                 dialogue_len_log = math.log(dialogue_len) if dialogue_len > 1 else 0.0
 
-                # 8. consecutive_sys_turns
+                # 8. consecutive_sys_turns  ← now correctly captures count before reset
                 consecutive_sys_turns = consecutive_sys
 
                 # 9. turn_len_ratio
@@ -99,7 +106,9 @@ def extract_features_from_dialogue(dialogue):
                 })
 
                 prev_sys_text = sys_text
-                consecutive_sys = 0
+
+            # ── FIX: reset consecutive_sys AFTER feature is captured ──
+            consecutive_sys = 0
 
         elif turn['speaker'] == 'SYSTEM':
             consecutive_sys += 1

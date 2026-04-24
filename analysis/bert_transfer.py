@@ -84,24 +84,6 @@ LR           = 2e-5
 WARMUP_RATIO = 0.1
 RANDOM_STATE = 42
 
-# Structural LR baseline for comparison table
-STRUCTURAL_BASELINE = {
-    "KETOD→KETOD":   (0.5364, 0.3302),
-    "KETOD→DSTC9":   (0.4165, 0.1872),
-    "KETOD→DSTC11":  (0.4121, 0.3670),
-    "DSTC9→KETOD":   (0.4661, 0.0000),
-    "DSTC9→DSTC9":   (0.7982, 0.7398),
-    "DSTC9→DSTC11":  (0.8359, 0.8564),
-    "DSTC11→KETOD":  (0.4661, 0.0000),
-    "DSTC11→DSTC9":  (0.8097, 0.7422),
-    "DSTC11→DSTC11": (0.8424, 0.8524),
-}
-
-SEMANTIC_BASELINE = {
-    "DSTC9→KETOD":   (0.4453, 0.1186),
-    "DSTC11→KETOD":  (0.3901, 0.1335),
-}
-
 HIGHLIGHT_PAIRS = [
     ("DSTC9",  "KETOD"),
     ("DSTC11", "KETOD"),
@@ -349,36 +331,7 @@ def main():
             })
         print(row)
 
-    # ── Step 4: Comparison table ──────────────────────────────────────────
-    if not args.no_comparison:
-        print("\n" + "="*70)
-        print("PROGRESSIVE CAPACITY CHECK — Minority F1 (DSTC→KETOD)")
-        print(f"{'Transfer':<20} {'Struct LR':>10} {'Semantic':>9} {'BERT':>7}")
-        print("-" * 50)
-        for train_ds, test_ds in HIGHLIGHT_PAIRS:
-            key = f"{train_ds}→{test_ds}"
-            s_mac, s_min = STRUCTURAL_BASELINE.get(key, (None, None))
-            sem_mac, sem_min = SEMANTIC_BASELINE.get(key, (None, None))
-            bert_mac, bert_min = f1_matrix.get(key, (None, None))
-            sem_str  = f"{sem_min:>9.4f}" if sem_min  is not None else f"{'N/A':>9}"
-            bert_str = f"{bert_min:>7.4f}" if bert_min is not None else f"{'N/A':>7}"
-            print(f"{key:<20} {s_min:>10.4f} {sem_str} {bert_str}")
-
-        print("\n" + "="*70)
-        print("FULL COMPARISON: Structural LR vs Semantic LR vs BERT")
-        print(f"{'Transfer':<20} {'S-Mac':>7} {'S-Min':>6} "
-              f"{'B-Mac':>7} {'B-Min':>6} {'ΔMin':>7}")
-        print("-" * 60)
-        for key, (s_mac, s_min) in STRUCTURAL_BASELINE.items():
-            if key not in f1_matrix:
-                continue
-            b_mac, b_min = f1_matrix[key]
-            train_ds, test_ds = key.split("→")
-            flag = " 🔴" if train_ds != test_ds and test_ds == "KETOD" else ""
-            print(f"{key:<20} {s_mac:>7.4f} {s_min:>6.4f} "
-                  f"{b_mac:>7.4f} {b_min:>6.4f} {b_min-s_min:>+7.4f}{flag}")
-
-    # ── Step 5: Save ──────────────────────────────────────────────────────
+    # ── Step 4: Save ──────────────────────────────────────────────────────
     results_path = os.path.join(args.output_dir, "bert_results.csv")
     pd.DataFrame(records).to_csv(results_path, index=False)
     print(f"\nSaved → {results_path}")
@@ -389,15 +342,8 @@ def main():
         if key not in f1_matrix:
             continue
         b_mac, b_min = f1_matrix[key]
-        s_mac, s_min = STRUCTURAL_BASELINE.get(key, (None, None))
         lines.append(f"\n{key}")
-        lines.append(f"  BERT:          Macro={b_mac:.4f}, Minority={b_min:.4f}")
-        if s_min is not None:
-            lines.append(f"  Structural LR: Macro={s_mac:.4f}, Minority={s_min:.4f}")
-            lines.append(f"  Δ Minority:    {b_min - s_min:+.4f}")
-        if key in SEMANTIC_BASELINE:
-            sem_mac, sem_min = SEMANTIC_BASELINE[key]
-            lines.append(f"  Semantic LR:   Macro={sem_mac:.4f}, Minority={sem_min:.4f}")
+        lines.append(f"  BERT: Macro={b_mac:.4f}, Minority={b_min:.4f}")
 
     summary_path = os.path.join(args.output_dir, "bert_summary.txt")
     with open(summary_path, "w", encoding="utf-8") as f:

@@ -1,19 +1,3 @@
-# ── CONFIG ────────────────────────────────────
-DATASETS = {
-    "KETOD": {
-        "train": "data/ketod/train_features.csv",
-        "test":  "data/ketod/test_features.csv",
-    },
-    "DSTC9": {
-        "train": "data/dstc9/train/train_features.csv",
-        "test":  "data/dstc9/val/test_features.csv",
-    },
-    "DSTC11": {
-        "train": "data/dstc11/train_features.csv",
-        "test":  "data/dstc11/test_features.csv",
-    },
-}
-# ──────────────────────────────────────────────
 """
 cross_dataset_transfer.py  —  补充实验
 Cross-dataset transfer: train on dataset A, test on dataset B.
@@ -23,7 +7,7 @@ Usage:
     python cross_dataset_transfer.py
 
 输出：
-    transfer_results.csv       — 完整 transfer 矩阵
+    transfer_results.csv       — 完整 transfer 矩阵（含 ROC-AUC / PR-AUC）
     transfer_matrix.png        — 热力图（论文 Figure 用）
 """
 
@@ -43,7 +27,10 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import Pipeline
 from sklearn.model_selection import StratifiedKFold, GridSearchCV
-from sklearn.metrics import f1_score, classification_report
+from sklearn.metrics import (
+    f1_score, classification_report,
+    roc_auc_score, average_precision_score,   # ← 新增
+)
 
 # ─────────────────────────────────────────────
 # 配置
@@ -115,10 +102,29 @@ def evaluate(model, test_df):
     X = test_df[ALL_FEATURES].values.astype(float)
     y = test_df[LABEL_COL].values.astype(int)
     y_pred = model.predict(X)
+
+    # ── 新增：用 predict_proba 计算 AUC ──────────────────────────
+    # positive class (label=1) 的概率，用于 AUC 计算
+    y_prob = model.predict_proba(X)[:, 1]
+
+    try:
+        roc_auc = round(roc_auc_score(y, y_prob), 4)
+    except ValueError:
+        # 极端情况：测试集只有一个类别
+        roc_auc = float("nan")
+
+    try:
+        pr_auc = round(average_precision_score(y, y_prob), 4)
+    except ValueError:
+        pr_auc = float("nan")
+    # ─────────────────────────────────────────────────────────────
+
     return {
         "macro_f1":  round(f1_score(y, y_pred, average="macro"), 4),
         "f1_pos":    round(f1_score(y, y_pred, pos_label=1, zero_division=0), 4),
         "f1_neg":    round(f1_score(y, y_pred, pos_label=0), 4),
+        "roc_auc":   roc_auc,    # ← 新增
+        "pr_auc":    pr_auc,     # ← 新增
         "report":    classification_report(y, y_pred, digits=4),
     }
 
@@ -150,30 +156,34 @@ def run():
     records = []
     f1_matrix = pd.DataFrame(index=ds_names, columns=ds_names, dtype=float)
 
-    print("\n" + "="*65)
-    print("TRANSFER MATRIX — Macro F1 (row=train, col=test)")
-    print("="*65)
-    print(f"{'Train \\ Test':<12}" + "".join(f"{ds:>10}" for ds in ds_names))
-    print("-"*45)
+    print("\n" + "="*75)
+    print("TRANSFER MATRIX — Macro F1 / ROC-AUC / PR-AUC (row=train, col=test)")
+    print("="*75)
+    print(f"{'Train→Test':<12}" +
+          "".join(f"{ds+' F1':>12}{ds+' ROC':>10}{ds+' PR':>9}" for ds in ds_names))
+    print("-"*75)
 
     for train_ds in ds_names:
         row_str = f"{train_ds:<12}"
         for test_ds in ds_names:
             metrics = evaluate(models[train_ds], test_dfs[test_ds])
-            f1 = metrics["macro_f1"]
+            f1  = metrics["macro_f1"]
+            roc = metrics["roc_auc"]
+            pr  = metrics["pr_auc"]
             f1_matrix.loc[train_ds, test_ds] = f1
 
             is_in_domain = (train_ds == test_ds)
-            marker = " [in]" if is_in_domain else ""
-            row_str += f"{f1:>10.4f}"
+            row_str += f"{f1:>12.4f}{roc:>10.4f}{pr:>9.4f}"
 
             records.append({
-                "train_on":     train_ds,
-                "test_on":      test_ds,
-                "in_domain":    is_in_domain,
-                "macro_f1":     f1,
-                "f1_pos":       metrics["f1_pos"],
-                "f1_neg":       metrics["f1_neg"],
+                "train_on":   train_ds,
+                "test_on":    test_ds,
+                "in_domain":  is_in_domain,
+                "macro_f1":   f1,
+                "f1_pos":     metrics["f1_pos"],
+                "f1_neg":     metrics["f1_neg"],
+                "roc_auc":    roc,    # ← 新增
+                "pr_auc":     pr,     # ← 新增
             })
         print(row_str)
 
@@ -202,11 +212,12 @@ def run():
             print(f"\n--- Train: {train_ds} → Test: {test_ds} ---")
             metrics = evaluate(models[train_ds], test_dfs[test_ds])
             print(metrics["report"])
+            print(f"  ROC-AUC: {metrics['roc_auc']:.4f}   PR-AUC: {metrics['pr_auc']:.4f}")
 
     # 保存结果
     df = pd.DataFrame(records)
     df.to_csv("transfer_results.csv", index=False)
-    print("Saved → transfer_results.csv")
+    print("\nSaved → transfer_results.csv")
 
     # 画热力图
     plot_heatmap(f1_matrix, ds_names)

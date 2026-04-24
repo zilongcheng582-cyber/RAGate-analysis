@@ -1,0 +1,4 @@
+feature,perturb_type,lr_flip_rate,lr_flip_pos,lr_flip_neg,mha_flip_rate,mha_flip_pos,mha_flip_neg,both_flip
+user_has_question,flip,0.1813,0.1521,0.1856,0.024,0.0254,0.0238,0.0052
+user_starts_question_word,flip,0.0784,0.0681,0.0799,N/A,N/A,N/A,N/A
+turn_position_ratio,zero,0.5794,0.3138,0.618,N/A,N/A,N/A,N/A

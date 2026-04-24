@@ -1,9 +1,3 @@
-# ── CONFIG ────────────────────────────────────
-TRAIN_JSON  = "data/ketod/train.json"
-TEST_JSON   = "data/ketod/test.json"
-TRAIN_OUT   = "data/ketod/train_features.csv"
-TEST_OUT    = "data/ketod/test_features.csv"
-# ──────────────────────────────────────────────
 """
 extract_features_ketod.py
 从 KETOD 原始 JSON 提取 10 个特征，输出 CSV 供 LR 训练。

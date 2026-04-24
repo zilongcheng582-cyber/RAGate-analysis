@@ -1,0 +1,10 @@
+dataset,shuffled_cols,baseline_f1,shuffled_mean,shuffled_std,delta
+KETOD,turn_position_ratio,0.5419,0.445,0.0048,0.0969
+KETOD,turn_position_squared,0.5419,0.5189,0.003,0.0231
+KETOD,all_position,0.5419,0.4607,0.0058,0.0812
+DSTC9,turn_position_ratio,0.7982,0.7982,0.0,0.0
+DSTC9,turn_position_squared,0.7982,0.7982,0.0,0.0
+DSTC9,all_position,0.7982,0.7982,0.0,0.0
+DSTC11,turn_position_ratio,0.8424,0.8424,0.0,0.0
+DSTC11,turn_position_squared,0.8424,0.8424,0.0,0.0
+DSTC11,all_position,0.8424,0.8424,0.0,0.0

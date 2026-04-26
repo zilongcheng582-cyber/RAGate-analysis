@@ -1,8 +1,8 @@
 # Shortcuts or Semantics? Probing Knowledge-Gating Benchmarks via Lightweight Feature Analysis
 
-Code for an ARR 2026 short-paper submission analyzing shortcut learning in knowledge-gating benchmarks: KETOD, DSTC9, and DSTC11.
+Code for an ARR short-paper submission on structural shortcuts in knowledge-gating benchmarks: KETOD, DSTC9, and DSTC11.
 
-The experiments test whether lightweight structural signals can expose benchmark-specific shortcut patterns in knowledge-gating evaluation. The results suggest that same-protocol DSTC datasets share highly similar structural signals, while transfer from DSTC to KETOD is weak on minority-class detection and ROC-AUC. Higher-capacity representations, including sentence embeddings and fine-tuned BERT, do not remove the DSTC→KETOD transfer failure in these experiments. Because KETOD and DSTC also differ in corpus family, the paper treats this as evidence consistent with protocol-linked shortcut mismatch rather than as a fully controlled causal decomposition.
+The experiments use lightweight structural probes to check whether benchmark performance can be driven by non-semantic regularities. The main pattern is that the same-protocol DSTC datasets share similar structural signals, while DSTC→KETOD transfer is weak on minority-class detection and ROC-AUC. Sentence embeddings and fine-tuned BERT do not remove this weakness in the reported setting. Since KETOD and DSTC also differ in corpus family, the paper treats the result as evidence consistent with protocol-linked shortcut mismatch, not as a fully controlled causal decomposition.
 
 ---
 
@@ -46,7 +46,7 @@ pip install -r requirements.txt
 Tested with Python 3.12 on:
 
 - PyTorch 2.5.1 for LR and MHA experiments
-- PyTorch 2.7.0 + CUDA 12.8 on RTX 5090 for the BERT experiment
+- PyTorch 2.7.0 + CUDA 12.8 on a single NVIDIA GPU for the BERT experiment
 
 ---
 
@@ -137,13 +137,13 @@ Then pass `--dstc9-train data/dstc9/train_dstc9_fixed.csv` to `bert_transfer.py`
 
 ## Results
 
-Pre-computed result files are in `results/`. Key numbers reproduced in the paper:
+Pre-computed result files are in `results/`. The main numbers used in the paper are:
 
 | Experiment | Key result |
 |---|---|
 | Feature ablation, Table 2 | Question-type features are strong on DSTC9/11; KETOD shows no single dominant feature group. |
 | Spearman correlation, Section 4.2 | DSTC9 vs DSTC11: ρ = +0.94, p < 0.001. KETOD vs DSTC: mean ρ ≈ −0.25, p > 0.1. |
-| Structural LR transfer, Table 3 | DSTC→KETOD minority F1 ≤ 0.22 and ROC-AUC ≈ 0.48. Macro F1 alone is less informative because of KETOD class imbalance. |
+| Structural LR transfer, Table 3 | DSTC→KETOD minority F1 ≤ 0.22 and ROC-AUC ≈ 0.48; Macro F1 alone is less informative because of KETOD class imbalance. |
 | Sentence-embedding transfer, Section 4.4 | DSTC→KETOD minority F1 = 0.12 / 0.13, compared with KETOD in-domain 0.36. |
 | Fine-tuned BERT transfer, Section 4.4 | DSTC→KETOD minority F1 = 0.10 / 0.07, while KETOD in-domain minority F1 reaches 0.50. |
 | LR–MHA agreement, Section 4.5 | Agreement 67.2%, κ = 0.25; LR false-negative cases overlap strongly with MHA failures. |
@@ -195,7 +195,7 @@ No utterance text or semantic content is accessed by the structural LR probe.
 
 ## Review-stage note
 
-This repository is for a double-blind ARR 2026 submission. If used during review, the repository should be anonymized or submitted as supplementary material without author-identifying metadata.
+This repository is for a double-blind ARR submission. If used during review, the repository should be anonymized or submitted as supplementary material without author-identifying metadata.
 
 ---
 

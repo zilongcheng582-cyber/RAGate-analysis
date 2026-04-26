@@ -246,7 +246,7 @@ test_dataloader = DataLoader(test_iter, batch_size=256,
 # 模型
 model = TransformerClassifier(
     vocab_size=len(vocab),
-    num_layers=5,
+    num_layers=7,
     embed_dim=64,
     num_heads=4,
     hidden_dim=64,

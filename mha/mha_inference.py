@@ -35,7 +35,11 @@ from tqdm import tqdm
 TRAIN_CSV    = "data/ketod/train_full.csv"
 TEST_CSV     = "data/ketod/test_full.csv"
 CHECKPOINT   = "outputs/MHA-trained/MHA_weighted_e35_f10.6139.pt"
+
 OUTPUT_CSV   = "results/mha_predictions.csv"
+
+
+
 
 # 模型超参（与训练时一致）
 NUM_LAYERS = 7       # 你说的 7 层

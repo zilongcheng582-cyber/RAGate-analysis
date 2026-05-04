@@ -9,15 +9,16 @@ mha_inference.py  —  Step 6 前置
 用训练好的 MHA checkpoint 对 KETOD test set 做推理，
 输出每个样本的预测结果，用于和 LR 做 agreement 分析。
 
-在 AutoDL 上运行（有 checkpoint 的机器）：
+在任意有兼容 checkpoint 的环境运行：
     python mha_inference.py
 
 输出：
-    mha_predictions.csv   — 含 label, mha_pred, mha_prob_0, mha_prob_1
+    results/mha_predictions.csv   — 含 label, mha_pred, mha_prob_0, mha_prob_1
 """
 
 import math
 import re
+import os
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -29,12 +30,16 @@ from datasets import load_dataset
 from tqdm import tqdm
 
 # ─────────────────────────────────────────────
-# 路径配置（AutoDL 上的路径）
+# 路径配置
 # ─────────────────────────────────────────────
 TRAIN_CSV    = "data/ketod/train_full.csv"
 TEST_CSV     = "data/ketod/test_full.csv"
 CHECKPOINT   = "outputs/MHA-trained/MHA_weighted_e35_f10.6139.pt"
-OUTPUT_CSV   = "mha_predictions.csv"
+
+OUTPUT_CSV   = "results/mha_predictions.csv"
+
+
+
 
 # 模型超参（与训练时一致）
 NUM_LAYERS = 7       # 你说的 7 层
@@ -263,6 +268,7 @@ def main():
         "mha_prob_0": np.round(all_prob0, 6),
         "mha_prob_1": np.round(all_prob1, 6),
     })
+    os.makedirs("results", exist_ok=True)
     df.to_csv(OUTPUT_CSV, index=False)
     print(f"\nSaved → {OUTPUT_CSV}  ({len(df)} rows)")
 

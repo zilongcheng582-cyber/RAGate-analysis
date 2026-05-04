@@ -1,6 +1,6 @@
 # Shortcuts or Semantics? Probing Knowledge-Gating Benchmarks via Lightweight Feature Analysis
 
-Code for an ARR short-paper submission on structural shortcuts in knowledge-gating benchmarks: KETOD, DSTC9, and DSTC11.
+Anonymous ARR supplementary code package for structural-shortcut analysis on knowledge-gating benchmarks: KETOD, DSTC9, and DSTC11.
 
 The experiments use lightweight structural probes to check whether benchmark performance can be driven by non-semantic regularities. The main pattern is that the same-protocol DSTC datasets share similar structural signals, while DSTC→KETOD transfer is weak on minority-class detection and ROC-AUC. Sentence embeddings and fine-tuned BERT do not remove this weakness in the reported setting. Since KETOD and DSTC also differ in corpus family, the paper treats the result as evidence consistent with protocol-linked shortcut mismatch, not as a fully controlled causal decomposition.
 
@@ -33,7 +33,7 @@ data/
     └── test_features.csv
 ```
 
-Before running, update the data paths in the `# CONFIG` block at the top of each script if your local layout differs.
+All scripts default to repository-relative paths. Use CLI path arguments only if your local layout differs.
 
 ---
 
@@ -54,6 +54,12 @@ Tested with Python 3.12 on:
 
 Run in order. All result files are written to `results/`.
 
+Lightweight validation:
+
+```bash
+bash run_lightweight_checks.sh
+```
+
 ### 1. Data processing
 
 ```bash
@@ -73,7 +79,8 @@ python mha/train_MHA.py --loss weighted --epochs 50
 python mha/mha_inference.py
 ```
 
-The MHA implementation is reimplemented from the architectural description in the original RAGate paper. It is not an exact reproduction of the released training setup. The implementation replaces the deprecated `torchtext` API with a custom `Vocab` class, adds a `CosineAnnealingLR` scheduler, and uses weighted cross-entropy for class imbalance. See Appendix B of the paper for details.
+MHA checkpoint note:
+The official RAGate repository releases a RAGate-MHA checkpoint for the original model. In this paper, however, we use a reimplemented MHA baseline described in Appendix B, because the original training pipeline depends on older torchtext components and does not fully specify the exact training configuration. Large checkpoints are not bundled in this anonymous supplementary package. To rerun MHA inference/agreement/counterfactual analyses, train a compatible checkpoint with `mha/train_MHA.py` or place a compatible checkpoint under `outputs/MHA-trained/`. The aggregate results used in the paper are already provided under `results/`.
 
 ### 3. LR probing
 
@@ -162,13 +169,12 @@ results/
 ├── threshold_tuning_results.csv    # KETOD threshold-tuning diagnostic
 ├── agreement_results.csv           # Section 4.5 LR vs MHA
 ├── counterfactual_results.csv      # Section 4.5 counterfactual flip
-├── mha_predictions.csv             # MHA test-set predictions on KETOD
 ├── class_conditional_qrate.csv     # Table 4
 ├── semantic_results.csv            # Section 4.4 semantic baseline transfer
-├── semantic_summary.txt
-├── bert_results.csv                # Section 4.4 BERT transfer
-└── bert_summary.txt
+└── bert_results.csv                # Section 4.4 BERT transfer
 ```
+
+Stale summary files such as `results/bert_summary.txt` are intentionally excluded.
 
 ---
 
@@ -195,7 +201,7 @@ No utterance text or semantic content is accessed by the structural LR probe.
 
 ## Review-stage note
 
-This repository is for a double-blind ARR submission. If used during review, the repository should be anonymized or submitted as supplementary material without author-identifying metadata.
+This repository is an anonymous ARR supplementary code package for double-blind review and should not include author-identifying metadata.
 
 ---
 

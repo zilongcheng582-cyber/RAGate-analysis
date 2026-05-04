@@ -6,7 +6,7 @@ proxy_check.py — MHA cross-dataset 实验前的代理检验
 逻辑：
 1. 用 DSTC9 train_features.csv 训练 LR，在 KETOD test_features.csv 上预测
 2. 找出 LR 的 false negatives（label=1 但预测=0）
-3. 看这些样本里 MHA（mha_predictions.csv，KETOD in-domain）的预测情况
+3. 看这些样本里 MHA（results/mha_predictions.csv，KETOD in-domain）的预测情况
 4. 59% MHA 同样失败 → MHA 部分缓解但问题仍存在（⚠️ 结论）
 
 结果（已跑）：

@@ -10,7 +10,7 @@ Dependencies:
     pip install transformers torch scikit-learn pandas numpy
 
 Usage:
-    # AutoDL / local GPU:
+    # Example (single GPU):
     python bert_transfer.py
 
     # With explicit paths:

@@ -79,7 +79,8 @@ python mha/train_MHA.py --loss weighted --epochs 50
 python mha/mha_inference.py
 ```
 
-Note: large pretrained checkpoints are not bundled in this supplementary package. Aggregate analysis CSVs are provided in `results/`. If you want to rerun MHA inference/agreement/counterfactual scripts, place the checkpoint under `outputs/MHA-trained/` and use script config/arguments accordingly.
+MHA checkpoint note:
+The official RAGate repository releases a RAGate-MHA checkpoint for the original model. In this paper, however, we use a reimplemented MHA baseline described in Appendix B, because the original training pipeline depends on older torchtext components and does not fully specify the exact training configuration. Large checkpoints are not bundled in this anonymous supplementary package. To rerun MHA inference/agreement/counterfactual analyses, train a compatible checkpoint with `mha/train_MHA.py` or place a compatible checkpoint under `outputs/MHA-trained/`. The aggregate results used in the paper are already provided under `results/`.
 
 ### 3. LR probing
 

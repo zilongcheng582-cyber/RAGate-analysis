@@ -9,7 +9,7 @@ mha_inference.py  —  Step 6 前置
 用训练好的 MHA checkpoint 对 KETOD test set 做推理，
 输出每个样本的预测结果，用于和 LR 做 agreement 分析。
 
-在 AutoDL 上运行（有 checkpoint 的机器）：
+在任意有兼容 checkpoint 的环境运行：
     python mha_inference.py
 
 输出：
@@ -30,7 +30,7 @@ from datasets import load_dataset
 from tqdm import tqdm
 
 # ─────────────────────────────────────────────
-# 路径配置（AutoDL 上的路径）
+# 路径配置
 # ─────────────────────────────────────────────
 TRAIN_CSV    = "data/ketod/train_full.csv"
 TEST_CSV     = "data/ketod/test_full.csv"

@@ -15,7 +15,7 @@ parts = [
     r'E\x3a/', r'C\x3a/', r'D\x3a/',
     '/'+'ro'+'ot/', '/'+'ho'+'me/', '/'+'m'+'nt/',
     'zi'+'long', 'ch'+'eng', 'github\\.com/'+'zi'+'long',
-    'Drop'+'box', 'Google'+' Drive'
+    'Drop'+'box', 'Google'+' Drive', 'Auto'+'DL'
 ]
 pattern = re.compile('|'.join(parts), flags=re.IGNORECASE)
 

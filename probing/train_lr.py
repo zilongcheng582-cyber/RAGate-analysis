@@ -1,19 +1,3 @@
-# ── CONFIG ────────────────────────────────────
-DATASETS = {
-    "KETOD": {
-        "train": "data/ketod/train_features.csv",
-        "test":  "data/ketod/test_features.csv",
-    },
-    "DSTC9": {
-        "train": "data/dstc9/train/train_features.csv",
-        "test":  "data/dstc9/val/test_features.csv",
-    },
-    "DSTC11": {
-        "train": "data/dstc11/train_features.csv",
-        "test":  "data/dstc11/test_features.csv",
-    },
-}
-# ──────────────────────────────────────────────
 """
 train_lr.py  —  Step 4: LR Feature Ablation
 RAGate · EMNLP 2026

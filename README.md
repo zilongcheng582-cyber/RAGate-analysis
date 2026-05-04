@@ -26,8 +26,10 @@ data/
 │   ├── train_features.csv
 │   └── test_features.csv
 ├── dstc9/
-│   ├── train/
-│   └── val/
+│   ├── train/                 # raw DSTC9 logs/labels
+│   ├── val/                   # raw DSTC9 logs/labels
+│   ├── train_features.csv     # generated structural features
+│   └── test_features.csv      # generated structural features
 └── dstc11/
     ├── train_features.csv
     └── test_features.csv
@@ -77,6 +79,8 @@ python mha/train_MHA.py --loss weighted --epochs 50
 
 # Run inference with the saved checkpoint
 python mha/mha_inference.py
+# or specify your own checkpoint filename after retraining
+python mha/mha_inference.py --checkpoint outputs/MHA-trained/<your_checkpoint>.pt
 ```
 
 MHA checkpoint note:

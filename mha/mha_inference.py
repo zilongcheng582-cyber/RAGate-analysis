@@ -19,6 +19,7 @@ mha_inference.py  —  Step 6 前置
 import math
 import re
 import os
+import argparse
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -188,11 +189,18 @@ class TransformerClassifier(nn.Module):
         return self.fc(torch.mean(x, dim=1))
 
 
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--checkpoint', default=CHECKPOINT, help='Path to compatible MHA checkpoint')
+    parser.add_argument('--output_csv', default=OUTPUT_CSV, help='Path to output predictions CSV')
+    return parser.parse_args()
+
 # ─────────────────────────────────────────────
 # 主流程
 # ─────────────────────────────────────────────
 
 def main():
+    args = parse_args()
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Device: {device}")
 
@@ -225,7 +233,7 @@ def main():
         return labels, texts
 
     # 加载模型
-    print(f"Loading checkpoint: {CHECKPOINT}")
+    print(f"Loading checkpoint: {args.checkpoint}")
     model = TransformerClassifier(
         vocab_size  = len(vocab),
         num_layers  = NUM_LAYERS,
@@ -235,7 +243,7 @@ def main():
         num_classes = NUM_CLASSES,
     ).to(device)
 
-    state_dict = torch.load(CHECKPOINT, map_location=device)
+    state_dict = torch.load(args.checkpoint, map_location=device)
     model.load_state_dict(state_dict)
     model.eval()
     print("Model loaded.")

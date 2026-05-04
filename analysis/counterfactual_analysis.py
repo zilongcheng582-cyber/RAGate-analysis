@@ -60,7 +60,6 @@ TRAIN_FULL_CSV= "data/ketod/train_full.csv"
 CHECKPOINT    = "outputs/MHA-trained/MHA_weighted_e35_f10.6139.pt"
 
 MHA_PRED_CSV  = "results/mha_predictions.csv"
-=======
 
 
 LABEL_COL = "label"

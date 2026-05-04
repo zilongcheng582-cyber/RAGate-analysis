@@ -12,10 +12,10 @@ counterfactual_analysis.py  —  补强实验3
 观察 LR 和 MHA 的预测是否 flip，量化两个模型对该特征的依赖程度。
 
 前置条件：
-    - E:/ketod-main/ketod_release/train_features.csv
-    - E:/ketod-main/ketod_release/test_features.csv
+    - data/ketod/train_features.csv
+    - data/ketod/test_features.csv
     - mha_predictions.csv（agreement 分析时生成的）
-    - E:/ketod-main/ketod_release/test_full.csv（用于 MHA 反事实推理）
+    - data/ketod/test_full.csv（用于 MHA 反事实推理）
     - MHA checkpoint（本地）
 
 Usage:
@@ -30,8 +30,8 @@ import warnings
 warnings.filterwarnings("ignore")
 
 import os
-os.makedirs("C:/Temp", exist_ok=True)
-os.environ["JOBLIB_TEMP_FOLDER"] = "C:/Temp"
+os.makedirs("results/.joblib_tmp", exist_ok=True)
+os.environ["JOBLIB_TEMP_FOLDER"] = "results/.joblib_tmp"
 
 import math, re
 import numpy as np
@@ -51,11 +51,11 @@ from tqdm import tqdm
 # ─────────────────────────────────────────────
 # 路径配置
 # ─────────────────────────────────────────────
-KETOD_TRAIN   = "E:/ketod-main/ketod_release/train_features.csv"
-KETOD_TEST    = "E:/ketod-main/ketod_release/test_features.csv"
-TEST_FULL_CSV = "E:/ketod-main/ketod_release/test_full.csv"
-TRAIN_FULL_CSV= "E:/ketod-main/ketod_release/train_full.csv"
-CHECKPOINT    = "E:/MHA_weighted_e35_f10.6139.pt"
+KETOD_TRAIN   = "data/ketod/train_features.csv"
+KETOD_TEST    = "data/ketod/test_features.csv"
+TEST_FULL_CSV = "data/ketod/test_full.csv"
+TRAIN_FULL_CSV= "data/ketod/train_full.csv"
+CHECKPOINT    = "outputs/MHA-trained/MHA_weighted_e35_f10.6139.pt"
 MHA_PRED_CSV  = "mha_predictions.csv"
 
 LABEL_COL = "label"
@@ -398,8 +398,9 @@ def main():
 
     # 保存
     df_out = pd.DataFrame(records)
-    df_out.to_csv("counterfactual_results.csv", index=False)
-    print(f"\nSaved → counterfactual_results.csv")
+    os.makedirs("results", exist_ok=True)
+    df_out.to_csv("results/counterfactual_results.csv", index=False)
+    print(f"\nSaved → results/counterfactual_results.csv")
 
     # 论文用摘要
     print("\n" + "="*60)
@@ -411,9 +412,9 @@ def main():
         print(f"  MHA flip rate: {row['mha_flip_rate']}")
         print(f"  Both flip:     {row['both_flip']}")
 
-    with open("counterfactual_summary.txt", "w") as f:
+    with open("results/counterfactual_summary.txt", "w") as f:
         f.write(df_out.to_string())
-    print("\nSaved → counterfactual_summary.txt")
+    print("\nSaved → results/counterfactual_summary.txt")
 
 
 if __name__ == "__main__":

@@ -19,8 +19,8 @@ import warnings
 warnings.filterwarnings("ignore")
 
 import os
-os.makedirs("C:/Temp", exist_ok=True)
-os.environ["JOBLIB_TEMP_FOLDER"] = "C:/Temp"
+os.makedirs("results/.joblib_tmp", exist_ok=True)
+os.environ["JOBLIB_TEMP_FOLDER"] = "results/.joblib_tmp"
 
 import numpy as np
 import pandas as pd
@@ -40,8 +40,8 @@ from sklearn.metrics import (
 # ─────────────────────────────────────────────
 # 配置（只跑 KETOD，其余数据集不需要）
 # ─────────────────────────────────────────────
-KETOD_TRAIN = "E:/ketod-main/ketod_release/train_features.csv"
-KETOD_TEST  = "E:/ketod-main/ketod_release/test_features.csv"
+KETOD_TRAIN = "data/ketod/train_features.csv"
+KETOD_TEST  = "data/ketod/test_features.csv"
 
 LABEL_COL = "label"
 
@@ -244,7 +244,7 @@ def run():
         if abl_name == "Full (10)":
             plot_threshold_curve(
                 model, X_val, y_val, X_test, y_test,
-                best_t, "threshold_curve_ketod.png"
+                best_t, "results/threshold_curve_ketod.png"
             )
             # 详细 classification report
             proba = model.predict_proba(X_test)[:, 1]
@@ -253,8 +253,9 @@ def run():
             print(classification_report(y_test, y_pred_tuned, digits=4))
 
     df = pd.DataFrame(records)
-    df.to_csv("threshold_tuning_results.csv", index=False)
-    print("Saved → threshold_tuning_results.csv")
+    os.makedirs("results", exist_ok=True)
+    df.to_csv("results/threshold_tuning_results.csv", index=False)
+    print("Saved → results/threshold_tuning_results.csv")
 
     # 汇总表
     print("\n" + "="*65)

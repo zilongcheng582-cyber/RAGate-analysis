@@ -10,7 +10,7 @@ LR Full 模型 vs MHA 的逐样本预测 agreement 分析。
 
 前置条件：
     - mha_predictions.csv（从 AutoDL 下载）
-    - E:/ketod-main/ketod_release/test_features.csv
+    - data/ketod/test_features.csv
 
 Usage:
     python agreement_analysis.py
@@ -24,8 +24,8 @@ import warnings
 warnings.filterwarnings("ignore")
 
 import os
-os.makedirs("C:/Temp", exist_ok=True)
-os.environ["JOBLIB_TEMP_FOLDER"] = "C:/Temp"
+os.makedirs("results/.joblib_tmp", exist_ok=True)
+os.environ["JOBLIB_TEMP_FOLDER"] = "results/.joblib_tmp"
 
 import numpy as np
 import pandas as pd
@@ -41,8 +41,8 @@ from sklearn.metrics import (
 # ─────────────────────────────────────────────
 # 路径配置
 # ─────────────────────────────────────────────
-KETOD_TRAIN    = "E:/ketod-main/ketod_release/train_features.csv"
-KETOD_TEST     = "E:/ketod-main/ketod_release/test_features.csv"
+KETOD_TRAIN    = "data/ketod/train_features.csv"
+KETOD_TEST     = "data/ketod/test_features.csv"
 MHA_PRED_CSV   = "mha_predictions.csv"   # 从 AutoDL 下载到本地
 
 LABEL_COL = "label"
@@ -224,14 +224,15 @@ def main():
     result_df["mha_pred"] = mha_pred
     result_df["mha_prob1"] = mha_df["mha_prob_1"].values
     result_df["agree"]    = (lr_pred == mha_pred).astype(int)
-    result_df.to_csv("agreement_results.csv", index=False)
-    print(f"\nSaved → agreement_results.csv")
+    os.makedirs("results", exist_ok=True)
+    result_df.to_csv("results/agreement_results.csv", index=False)
+    print(f"\nSaved → results/agreement_results.csv")
 
     # 保存摘要
-    with open("agreement_summary.txt", "w") as f:
+    with open("results/agreement_summary.txt", "w") as f:
         for k, v in summary.items():
             f.write(f"{k}: {v}\n")
-    print("Saved → agreement_summary.txt")
+    print("Saved → results/agreement_summary.txt")
 
     # 最后打印论文用的一句话数字
     print(f"\n{'='*60}")

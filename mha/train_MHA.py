@@ -190,7 +190,7 @@ print(f"Using device: {device}")
 tokenizer = get_tokenizer("basic_english")
 
 print("Building vocab...")
-train_iter = TextClassificationDataset("/root/train_full.csv")
+train_iter = TextClassificationDataset(TRAIN_CSV)
 
 def yield_tokens(data_iter: Iterable, tokenizer):
     for _, text in data_iter:
@@ -239,7 +239,7 @@ elif args.loss == "focal":
 train_dataloader = DataLoader(train_iter, batch_size=args.batch_size,
                                shuffle=True, collate_fn=collate_batch)
 
-test_iter = TextClassificationDataset("/root/test_full.csv")
+test_iter = TextClassificationDataset(TEST_CSV)
 test_dataloader = DataLoader(test_iter, batch_size=256,
                               shuffle=False, collate_fn=collate_batch)
 
@@ -300,8 +300,8 @@ for epoch in range(1, args.epochs + 1):
         if macro_f1 > best_f1:
             best_f1 = macro_f1
             best_epoch = epoch
-            os.makedirs("../../outputs/MHA-trained", exist_ok=True)
-            ckpt_name = f"../../outputs/MHA-trained/MHA_{args.loss}_e{epoch}_f1{macro_f1:.4f}.pt"
+            os.makedirs(CKPT_DIR, exist_ok=True)
+            ckpt_name = os.path.join(CKPT_DIR, f"MHA_{args.loss}_e{epoch}_f1{macro_f1:.4f}.pt")
             torch.save(model.state_dict(), ckpt_name)
             print(f"  -> Saved best checkpoint: {ckpt_name}")
 

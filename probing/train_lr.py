@@ -31,10 +31,10 @@ warnings.filterwarnings("ignore")
 
 import os
 # joblib 在路径含中文时 ASCII 编码出错，强制用纯 ASCII 的 temp 目录
-os.makedirs("C:/Temp", exist_ok=True)
-os.environ["JOBLIB_TEMP_FOLDER"] = "C:/Temp"
+os.makedirs("results/.joblib_tmp", exist_ok=True)
+os.environ["JOBLIB_TEMP_FOLDER"] = "results/.joblib_tmp"
 import joblib
-joblib.parallel.JOBLIB_TEMP_FOLDER = "C:/Temp"
+joblib.parallel.JOBLIB_TEMP_FOLDER = "results/.joblib_tmp"
 import numpy as np
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
@@ -48,16 +48,16 @@ from sklearn.metrics import f1_score, precision_score, recall_score, classificat
 # ─────────────────────────────────────────────
 DATASETS = {
     "KETOD": {
-        "train": "E:/ketod-main/ketod_release/train_features.csv",
-        "test":  "E:/ketod-main/ketod_release/test_features.csv",
+        "train": "data/ketod/train_features.csv",
+        "test":  "data/ketod/test_features.csv",
     },
     "DSTC9": {
-        "train": "E:/dstc9-track1/data/train/train_features.csv",
-        "test":  "E:/dstc9-track1/data/val/test_features.csv",
+        "train": "data/dstc9/train_features.csv",
+        "test":  "data/dstc9/test_features.csv",
     },
     "DSTC11": {
-        "train": "E:/dstc11-track5/train_features.csv",
-        "test":  "E:/dstc11-track5/test_features.csv",
+        "train": "data/dstc11/train_features.csv",
+        "test":  "data/dstc11/test_features.csv",
     },
 }
 
@@ -240,7 +240,8 @@ if __name__ == "__main__":
     results_df = run_all()
 
     # 保存
-    out_csv = "lr_results.csv"
+    out_csv = "results/lr_results.csv"
+    os.makedirs("results", exist_ok=True)
     results_df.to_csv(out_csv, index=False)
     print(f"\nSaved → {out_csv}")
 

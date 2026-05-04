@@ -16,10 +16,10 @@ import re
 import pandas as pd
 
 # ===== 路径 =====
-TRAIN_CSV = "E:/dstc11-track5/train.csv"
-VAL_CSV   = "E:/dstc11-track5/val.csv"
-TRAIN_OUT = "E:/dstc11-track5/train_features.csv"
-VAL_OUT   = "E:/dstc11-track5/test_features.csv"
+TRAIN_CSV = "data/dstc11/train.csv"
+VAL_CSV   = "data/dstc11/val.csv"
+TRAIN_OUT = "data/dstc11/train_features.csv"
+VAL_OUT   = "data/dstc11/test_features.csv"
 
 QUESTION_WORDS = {'what','how','where','when','why','is','does','can','do'}
 

@@ -31,9 +31,9 @@ from tqdm import tqdm
 # ─────────────────────────────────────────────
 # 路径配置（AutoDL 上的路径）
 # ─────────────────────────────────────────────
-TRAIN_CSV    = "E:/ketod-main/ketod_release/train_full.csv"
-TEST_CSV     = "E:/ketod-main/ketod_release/test_full.csv"
-CHECKPOINT   = "E:/MHA_weighted_e35_f10.6139.pt"
+TRAIN_CSV    = "data/ketod/train_full.csv"
+TEST_CSV     = "data/ketod/test_full.csv"
+CHECKPOINT   = "outputs/MHA-trained/MHA_weighted_e35_f10.6139.pt"
 OUTPUT_CSV   = "mha_predictions.csv"
 
 # 模型超参（与训练时一致）

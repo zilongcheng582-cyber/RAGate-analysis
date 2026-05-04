@@ -31,13 +31,13 @@ def convert_dstc9(logs_path, labels_path, output_path):
     print(f"完成，共 {len(rows)} 条，保存到 {output_path}")
 
 convert_dstc9(
-    'E:/dstc9-track1/data/train/logs.json',
-    'E:/dstc9-track1/data/train/labels.json',
-    'E:/dstc9-track1/data/train/train_dstc9.csv'
+    'data/dstc9/train/logs.json',
+    'data/dstc9/train/labels.json',
+    'data/dstc9/train_dstc9.csv'
 )
 # 转换 val（作为测试集）
 convert_dstc9(
-    'E:/dstc9-track1/data/val/logs.json',
-    'E:/dstc9-track1/data/val/labels.json',
-    'E:/dstc9-track1/data/val/test_dstc9.csv'
+    'data/dstc9/val/logs.json',
+    'data/dstc9/val/labels.json',
+    'data/dstc9/test_dstc9.csv'
 )

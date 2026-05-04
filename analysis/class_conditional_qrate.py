@@ -11,15 +11,15 @@ import pandas as pd
 
 DATASETS = {
     "KETOD": {
-        "path": "E:/ketod-main/ketod_release/train_full.csv",
+        "path": "data/ketod/train_full.csv",
         "engine": "c",
     },
     "DSTC9": {
-        "path": "E:/dstc9-track1/data/train/train_dstc9.csv",
+        "path": "data/dstc9/train_dstc9.csv",
         "engine": "python",
     },
     "DSTC11": {
-        "path": "E:/dstc11-track5/train.csv",
+        "path": "data/dstc11/train.csv",
         "engine": "c",
     },
 }

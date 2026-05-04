@@ -15,13 +15,13 @@ import math
 import re
 
 # ===== 路径 =====
-TRAIN_LOGS   = "E:/dstc9-track1/data/train/logs.json"
-TRAIN_LABELS = "E:/dstc9-track1/data/train/labels.json"
-TRAIN_OUT    = "E:/dstc9-track1/data/train/train_features.csv"
+TRAIN_LOGS   = "data/dstc9/train/logs.json"
+TRAIN_LABELS = "data/dstc9/train/labels.json"
+TRAIN_OUT    = "data/dstc9/train_features.csv"
 
-VAL_LOGS     = "E:/dstc9-track1/data/val/logs.json"
-VAL_LABELS   = "E:/dstc9-track1/data/val/labels.json"
-VAL_OUT      = "E:/dstc9-track1/data/val/test_features.csv"
+VAL_LOGS     = "data/dstc9/val/logs.json"
+VAL_LABELS   = "data/dstc9/val/labels.json"
+VAL_OUT      = "data/dstc9/test_features.csv"
 
 QUESTION_WORDS = {'what','how','where','when','why','is','does','can','do'}
 

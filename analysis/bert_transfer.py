@@ -23,8 +23,6 @@ Usage:
         --dstc11-test  data/dstc11/val.csv \
         --output-dir  results/
 
-    # Skip structural comparison table:
-    python bert_transfer.py --no-comparison
 
 Outputs:
     bert_results.csv      — full 3x3 transfer matrix
@@ -236,7 +234,6 @@ def parse_args():
     p.add_argument("--dstc11-train",  default=None)
     p.add_argument("--dstc11-test",   default=None)
     p.add_argument("--output-dir",    default="results")
-    p.add_argument("--no-comparison", action="store_true")
     p.add_argument("--epochs",        type=int, default=EPOCHS)
     p.add_argument("--batch-size",    type=int, default=BATCH_SIZE)
     return p.parse_args()

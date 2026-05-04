@@ -23,8 +23,8 @@ import warnings
 warnings.filterwarnings("ignore")
 
 import os
-os.makedirs("C:/Temp", exist_ok=True)
-os.environ["JOBLIB_TEMP_FOLDER"] = "C:/Temp"
+os.makedirs("results/.joblib_tmp", exist_ok=True)
+os.environ["JOBLIB_TEMP_FOLDER"] = "results/.joblib_tmp"
 
 import numpy as np
 import pandas as pd
@@ -42,16 +42,16 @@ from sentence_transformers import SentenceTransformer
 # 不是 train_features.csv（那个是结构特征，没有文本）
 DATASETS = {
     "KETOD": {
-        "train": "E:/ketod-main/ketod_release/train_full.csv",
-        "test":  "E:/ketod-main/ketod_release/test_full.csv",
+        "train": "data/ketod/train_full.csv",
+        "test":  "data/ketod/test_full.csv",
     },
     "DSTC9": {
-        "train": "E:/dstc9-track1/data/train/train_dstc9.csv",
-        "test":  "E:/dstc9-track1/data/val/test_dstc9.csv",
+        "train": "data/dstc9/train_dstc9.csv",
+        "test":  "data/dstc9/test_dstc9.csv",
     },
     "DSTC11": {
-        "train": "E:/dstc11-track5/train.csv",
-        "test":  "E:/dstc11-track5/val.csv",
+        "train": "data/dstc11/train.csv",
+        "test":  "data/dstc11/val.csv",
     },
 }
 
@@ -202,8 +202,9 @@ def main():
 
     # 保存
     df = pd.DataFrame(records)
-    df.to_csv("semantic_results.csv", index=False)
-    print(f"\nSaved → semantic_results.csv")
+    os.makedirs("results", exist_ok=True)
+    df.to_csv("results/semantic_results.csv", index=False)
+    print(f"\nSaved → results/semantic_results.csv")
 
     # 论文用关键数字
     print(f"\n{'='*50}")
@@ -213,9 +214,9 @@ def main():
         print(f"  {key}:")
         print(f"    Semantic LR: Macro={sem_macro:.4f}, Minority={sem_min:.4f}")
 
-    with open("semantic_summary.txt", "w") as f:
+    with open("results/semantic_summary.txt", "w") as f:
         f.write(df.to_string())
-    print("Saved → semantic_summary.txt")
+    print("Saved → results/semantic_summary.txt")
 
 
 if __name__ == "__main__":

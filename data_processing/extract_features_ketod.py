@@ -15,10 +15,10 @@ import math
 import re
 
 # ===== 路径 =====
-TRAIN_JSON = "E:/ketod-main/ketod_release/train.json"
-TEST_JSON  = "E:/ketod-main/ketod_release/test.json"
-TRAIN_OUT  = "E:/ketod-main/ketod_release/train_features.csv"
-TEST_OUT   = "E:/ketod-main/ketod_release/test_features.csv"
+TRAIN_JSON = "data/ketod/train.json"
+TEST_JSON  = "data/ketod/test.json"
+TRAIN_OUT  = "data/ketod/train_features.csv"
+TEST_OUT   = "data/ketod/test_features.csv"
 
 QUESTION_WORDS = {'what','how','where','when','why','is','does','can','do'}
 

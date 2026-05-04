@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-python -B -m py_compile analysis/*.py probing/*.py data_processing/*.py mha/*.py
+PYTHONPYCACHEPREFIX=/tmp/ragate_pycache python -B -m py_compile analysis/*.py probing/*.py data_processing/*.py mha/*.py
 
 python - <<'PY'
 import pathlib, re, sys
@@ -37,4 +37,7 @@ if violations:
 print('Lightweight checks passed.')
 PY
 
-find . -type d -name __pycache__ -prune -exec rm -rf {} +
+if find . -type d -name __pycache__ | grep -q .; then
+  echo "__pycache__ directories found"
+  exit 1
+fi

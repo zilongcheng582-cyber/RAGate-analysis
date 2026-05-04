@@ -170,9 +170,10 @@ results/
 ├── counterfactual_results.csv      # Section 4.5 counterfactual flip
 ├── class_conditional_qrate.csv     # Table 4
 ├── semantic_results.csv            # Section 4.4 semantic baseline transfer
-├── bert_results.csv                # Section 4.4 BERT transfer
-└── (no stale summary txt files)
+└── bert_results.csv                # Section 4.4 BERT transfer
 ```
+
+Stale summary files such as `results/bert_summary.txt` are intentionally excluded.
 
 ---
 

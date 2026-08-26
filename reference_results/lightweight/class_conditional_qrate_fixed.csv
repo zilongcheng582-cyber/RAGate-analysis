@@ -1,0 +1,4 @@
+"dataset","source_file","feature_definition","N_pos","N_neg","pos_q_rate","neg_q_rate","delta"
+"KETOD","data/ketod/train_features.csv","current_user_turn","5021","36918","0.31905994821748657","0.28273470935586975","0.036325238861616815"
+"DSTC9","data/dstc9/train_features.csv","current_user_turn","19184","52164","0.9654920767306089","0.3123035043324898","0.653188572398119"
+"DSTC11","data/dstc11/train_features.csv","current_user_turn","14768","13663","0.9679035752979415","0.3989606967723048","0.5689428785256367"

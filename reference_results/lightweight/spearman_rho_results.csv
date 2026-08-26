@@ -1,0 +1,4 @@
+pair,rho,p_value,sig
+KETOD vs DSTC9,-0.2736,0.4444,ns
+KETOD vs DSTC11,-0.2249,0.5321,ns
+DSTC9 vs DSTC11,0.939,0.0001,***

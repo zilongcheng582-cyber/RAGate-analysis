@@ -1,0 +1,255 @@
+{
+  "passed": true,
+  "results": [
+    {
+      "dataset": "KETOD",
+      "split": "train",
+      "relative_path": "ketod/train_full.csv",
+      "generated_sha256": "ff97ab62db5458dbf455a7d9264a7a1d9e66d85f6a5cc702cb3eff9422344fdb",
+      "canonical": "LOCAL-ONLY oracle supplied via CLI",
+      "canonical_sha256": "ff97ab62db5458dbf455a7d9264a7a1d9e66d85f6a5cc702cb3eff9422344fdb",
+      "byte_exact": true,
+      "semantic_exact": true,
+      "rows": 41939,
+      "columns": [
+        "instruction",
+        "input",
+        "output"
+      ]
+    },
+    {
+      "dataset": "KETOD",
+      "split": "test",
+      "relative_path": "ketod/test_full.csv",
+      "generated_sha256": "83605331f5f4b8a8e8074e1686c765ea90990ddc982c93fbab8f6ad6dfbc57e7",
+      "canonical": "LOCAL-ONLY oracle supplied via CLI",
+      "canonical_sha256": "83605331f5f4b8a8e8074e1686c765ea90990ddc982c93fbab8f6ad6dfbc57e7",
+      "byte_exact": true,
+      "semantic_exact": true,
+      "rows": 4964,
+      "columns": [
+        "instruction",
+        "input",
+        "output"
+      ]
+    },
+    {
+      "dataset": "DSTC9",
+      "split": "train",
+      "relative_path": "dstc9/train_dstc9.csv",
+      "generated_sha256": "d0e8b8888dc6a85a4542c240bcc3b5903acee5b0371b972a01ba9e3e0f11925d",
+      "canonical": "LOCAL-ONLY oracle supplied via CLI",
+      "canonical_sha256": "d0e8b8888dc6a85a4542c240bcc3b5903acee5b0371b972a01ba9e3e0f11925d",
+      "byte_exact": true,
+      "semantic_exact": true,
+      "rows": 71348,
+      "columns": [
+        "input",
+        "output"
+      ]
+    },
+    {
+      "dataset": "DSTC9",
+      "split": "held-out",
+      "relative_path": "dstc9/test_dstc9.csv",
+      "generated_sha256": "14687a4ce72e8abf78c88c11a6ae0203bdfd5f5a328d690302b23cc89fca743f",
+      "canonical": "LOCAL-ONLY oracle supplied via CLI",
+      "canonical_sha256": "14687a4ce72e8abf78c88c11a6ae0203bdfd5f5a328d690302b23cc89fca743f",
+      "byte_exact": true,
+      "semantic_exact": true,
+      "rows": 9663,
+      "columns": [
+        "input",
+        "output"
+      ]
+    },
+    {
+      "dataset": "DSTC11",
+      "split": "train",
+      "relative_path": "dstc11/train.csv",
+      "generated_sha256": "e7c6e55bd4f81086d76eea9a40ebaba5302b74132b9e22cf07631f64ab5fe744",
+      "canonical": "LOCAL-ONLY oracle supplied via CLI",
+      "canonical_sha256": "e7c6e55bd4f81086d76eea9a40ebaba5302b74132b9e22cf07631f64ab5fe744",
+      "byte_exact": true,
+      "semantic_exact": true,
+      "rows": 28431,
+      "columns": [
+        "input",
+        "output"
+      ]
+    },
+    {
+      "dataset": "DSTC11",
+      "split": "held-out",
+      "relative_path": "dstc11/val.csv",
+      "generated_sha256": "508a09033ce6d143c11df946570219ac1441412a7ff1f4cce1acad74aa436520",
+      "canonical": "LOCAL-ONLY oracle supplied via CLI",
+      "canonical_sha256": "508a09033ce6d143c11df946570219ac1441412a7ff1f4cce1acad74aa436520",
+      "byte_exact": true,
+      "semantic_exact": true,
+      "rows": 4173,
+      "columns": [
+        "input",
+        "output"
+      ]
+    },
+    {
+      "dataset": "KETOD",
+      "split": "train",
+      "relative_path": "ketod/train_features.csv",
+      "generated_sha256": "65a37d86bb275978e6f0508038aaf20809959e0452abe091f93a8a31b3a47d30",
+      "canonical": "LOCAL-ONLY oracle supplied via CLI",
+      "canonical_sha256": "65a37d86bb275978e6f0508038aaf20809959e0452abe091f93a8a31b3a47d30",
+      "byte_exact": true,
+      "semantic_exact": true,
+      "rows": 41939,
+      "columns": [
+        "dialogue_id",
+        "turn_idx",
+        "turn_position_ratio",
+        "prev_sys_is_question",
+        "user_has_question",
+        "user_starts_question_word",
+        "user_turn_len_log",
+        "sys_turn_len_log",
+        "dialogue_len_log",
+        "consecutive_sys_turns",
+        "turn_len_ratio",
+        "turn_position_squared",
+        "label"
+      ]
+    },
+    {
+      "dataset": "KETOD",
+      "split": "test",
+      "relative_path": "ketod/test_features.csv",
+      "generated_sha256": "5c2de664480e662d0eda2d55e8622b00539e675852167b2482636a4344909f24",
+      "canonical": "LOCAL-ONLY oracle supplied via CLI",
+      "canonical_sha256": "5c2de664480e662d0eda2d55e8622b00539e675852167b2482636a4344909f24",
+      "byte_exact": true,
+      "semantic_exact": true,
+      "rows": 4964,
+      "columns": [
+        "dialogue_id",
+        "turn_idx",
+        "turn_position_ratio",
+        "prev_sys_is_question",
+        "user_has_question",
+        "user_starts_question_word",
+        "user_turn_len_log",
+        "sys_turn_len_log",
+        "dialogue_len_log",
+        "consecutive_sys_turns",
+        "turn_len_ratio",
+        "turn_position_squared",
+        "label"
+      ]
+    },
+    {
+      "dataset": "DSTC9",
+      "split": "train",
+      "relative_path": "dstc9/train_features.csv",
+      "generated_sha256": "9dfa1159de400a5dad6014fea4baedbe240f77231e44d2138fba8f57f73e634e",
+      "canonical": "LOCAL-ONLY oracle supplied via CLI",
+      "canonical_sha256": "9dfa1159de400a5dad6014fea4baedbe240f77231e44d2138fba8f57f73e634e",
+      "byte_exact": true,
+      "semantic_exact": true,
+      "rows": 71348,
+      "columns": [
+        "dialogue_id",
+        "turn_idx",
+        "turn_position_ratio",
+        "prev_sys_is_question",
+        "user_has_question",
+        "user_starts_question_word",
+        "user_turn_len_log",
+        "sys_turn_len_log",
+        "dialogue_len_log",
+        "consecutive_sys_turns",
+        "turn_len_ratio",
+        "turn_position_squared",
+        "label"
+      ]
+    },
+    {
+      "dataset": "DSTC9",
+      "split": "held-out",
+      "relative_path": "dstc9/test_features.csv",
+      "generated_sha256": "d7324a9d01eba6241964daea574f100bed766115ba4b24bbbc513435f1b56634",
+      "canonical": "LOCAL-ONLY oracle supplied via CLI",
+      "canonical_sha256": "d7324a9d01eba6241964daea574f100bed766115ba4b24bbbc513435f1b56634",
+      "byte_exact": true,
+      "semantic_exact": true,
+      "rows": 9663,
+      "columns": [
+        "dialogue_id",
+        "turn_idx",
+        "turn_position_ratio",
+        "prev_sys_is_question",
+        "user_has_question",
+        "user_starts_question_word",
+        "user_turn_len_log",
+        "sys_turn_len_log",
+        "dialogue_len_log",
+        "consecutive_sys_turns",
+        "turn_len_ratio",
+        "turn_position_squared",
+        "label"
+      ]
+    },
+    {
+      "dataset": "DSTC11",
+      "split": "train",
+      "relative_path": "dstc11/train_features.csv",
+      "generated_sha256": "1d6718365f0617f7e11633e2d1ce51a07c8612866085d0fe67ef3a6649518e21",
+      "canonical": "LOCAL-ONLY oracle supplied via CLI",
+      "canonical_sha256": "1d6718365f0617f7e11633e2d1ce51a07c8612866085d0fe67ef3a6649518e21",
+      "byte_exact": true,
+      "semantic_exact": true,
+      "rows": 28431,
+      "columns": [
+        "dialogue_id",
+        "turn_idx",
+        "turn_position_ratio",
+        "prev_sys_is_question",
+        "user_has_question",
+        "user_starts_question_word",
+        "user_turn_len_log",
+        "sys_turn_len_log",
+        "dialogue_len_log",
+        "consecutive_sys_turns",
+        "turn_len_ratio",
+        "turn_position_squared",
+        "label"
+      ]
+    },
+    {
+      "dataset": "DSTC11",
+      "split": "held-out",
+      "relative_path": "dstc11/test_features.csv",
+      "generated_sha256": "47756bf2144cd01d31b62f6e09624c83d0091d9329f42d6846920c5a3aefd6f3",
+      "canonical": "LOCAL-ONLY oracle supplied via CLI",
+      "canonical_sha256": "47756bf2144cd01d31b62f6e09624c83d0091d9329f42d6846920c5a3aefd6f3",
+      "byte_exact": true,
+      "semantic_exact": true,
+      "rows": 4173,
+      "columns": [
+        "dialogue_id",
+        "turn_idx",
+        "turn_position_ratio",
+        "prev_sys_is_question",
+        "user_has_question",
+        "user_starts_question_word",
+        "user_turn_len_log",
+        "sys_turn_len_log",
+        "dialogue_len_log",
+        "consecutive_sys_turns",
+        "turn_len_ratio",
+        "turn_position_squared",
+        "label"
+      ]
+    }
+  ],
+  "difference_count": 0,
+  "differences_path": "preprocessing/verification_differences.csv"
+}

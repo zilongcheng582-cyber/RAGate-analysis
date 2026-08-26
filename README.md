@@ -1,221 +1,152 @@
-# Shortcuts or Semantics? Probing Knowledge-Gating Benchmarks via Lightweight Feature Analysis
+# Knowledge-gating benchmark audit: camera-ready code
 
-Anonymous ARR supplementary code package for structural-shortcut analysis on knowledge-gating benchmarks: KETOD, DSTC9, and DSTC11.
+This package reproduces the experiments supporting the camera-ready paper. It
+contains the lightweight structural probe and controls, the corrected MiniLM
+representation check, and the corrected fine-tuned BERT representation check.
+The removed MHA experiment is not part of this artifact.
 
-The experiments use lightweight structural probes to check whether benchmark performance can be driven by non-semantic regularities. The main pattern is that the same-protocol DSTC datasets share similar structural signals, while DSTC→KETOD transfer is weak on minority-class detection and ROC-AUC. Sentence embeddings and fine-tuned BERT do not remove this weakness in the reported setting. Since KETOD and DSTC also differ in corpus family, the paper treats the result as evidence consistent with protocol-linked shortcut mismatch, not as a fully controlled causal decomposition.
+## Package scope
 
----
+- `lightweight/`: LR ablation, feature ranking, 3x3 transfer, No-Q,
+  threshold-calibration, current-turn question rate and grouped position
+  permutation.
+- `minilm/`: accumulated-context MiniLM transfer, explicit left-256 truncation,
+  truncation audit and overlap sensitivity.
+- `bert/`: accumulated-context BERT transfer, explicit left-256 truncation,
+  input audit, 3x3 evaluation and fail-closed result validation.
+- `data_processing/`: historical feature-extraction interfaces.
+- `preprocessing/`: deterministic raw-benchmark to processed-text and structural-feature conversion, inventory, and fail-closed verification.
+- `reference_results/`: compact outputs used to check the paper values.
+- `docs/`: exact protocol and paper-to-artifact mapping.
+- `scripts/verify_package.py`: dependency-free package/protocol audit.
 
-## Datasets
+Benchmark files, weights, checkpoints, predictions, caches and logs are not
+included. See `data/README.md` for data placement and split provenance.
 
-Download the datasets and place them under the following structure:
+## 1. Verify the downloaded package
 
-| Dataset | Source | Path |
-|---|---|---|
-| KETOD | `facebookresearch/ketod` | `data/ketod/` |
-| DSTC9 Track 1 | `alexa/alexa-with-dstc9-track1-dataset` | `data/dstc9/` |
-| DSTC11 Track 5 | `alexa/dstc11-track5` | `data/dstc11/` |
-
-Default layout assumed by the scripts:
-
-```text
-data/
-├── ketod/
-│   ├── train_full.csv
-│   ├── test_full.csv
-│   ├── train_features.csv
-│   └── test_features.csv
-├── dstc9/
-│   ├── train/                 # raw DSTC9 logs/labels
-│   ├── val/                   # raw DSTC9 logs/labels
-│   ├── train_features.csv     # generated structural features
-│   └── test_features.csv      # generated structural features
-└── dstc11/
-    ├── train_features.csv
-    └── test_features.csv
-```
-
-All scripts default to repository-relative paths. Use CLI path arguments only if your local layout differs.
-
----
-
-## Environment
+From the package root:
 
 ```bash
-pip install -r requirements.txt
+python scripts/verify_package.py
 ```
 
-Tested with Python 3.12 on:
+This checks file completeness, Python syntax, protocol constants, formal 3x3
+result matrices, absence of removed experiment code, absence of model/data
+payloads, relative path configuration and every entry in `SHA256SUMS.txt`.
 
-- PyTorch 2.5.1 for LR and MHA experiments
-- PyTorch 2.7.0 + CUDA 12.8 on a single NVIDIA GPU for the BERT experiment
+## 2. Lightweight experiments
 
----
-
-## Reproduction
-
-Run in order. All result files are written to `results/`.
-
-Lightweight validation:
+Create a CPU environment and place the six feature CSVs under `data/`:
 
 ```bash
-bash run_lightweight_checks.sh
+python -m venv .venv-lightweight
+python -m pip install -r requirements-lightweight.txt
+
+python lightweight/train_lr_ablation.py \
+  --data-root . --output-dir outputs/lightweight/core
+
+python lightweight/feature_importance_spearman.py \
+  --data-root . --output-dir outputs/lightweight/core
+
+python lightweight/run_transfer_controls.py \
+  --config config_paths.json --output-dir outputs/lightweight/controls
+
+python lightweight/run_feature_controls.py \
+  --config config_paths.json --output-dir outputs/lightweight/controls
 ```
 
-### 1. Data processing
+These experiments use NumPy, pandas and scikit-learn and do not require a GPU.
+
+## 3. Corrected MiniLM experiment
+
+Use a separate environment, place the six processed-text CSVs under `data/`,
+and run:
 
 ```bash
-python data_processing/convert_dstc9.py
-python data_processing/extract_features_ketod.py
-python data_processing/extract_features_dstc9.py
-python data_processing/extract_features_dstc11.py
+python -m venv .venv-minilm
+python -m pip install -r requirements-minilm.txt
+
+python minilm/minilm_input_audit.py \
+  --config config_paths.json --data-root . --output-dir outputs/minilm
+
+python minilm/minilm_transfer_ready.py \
+  --config config_paths.json --data-root . --output-dir outputs/minilm \
+  --truncation-side left --max-len 256
 ```
 
-### 2. RAGate-MHA baseline on KETOD
+Omit network restrictions on the first run so that
+`sentence-transformers/all-MiniLM-L6-v2` can be downloaded. Add
+`--local-files-only` only when that exact model is already cached. The formal run used `sentence-transformers/all-MiniLM-L6-v2`, sentence-transformers 5.2.2, and seed 42. The formal scripts fail closed if a different MiniLM model identifier is supplied.
+
+## 4. Corrected BERT experiment
+
+Use a Linux CUDA environment with at least 24 GB GPU memory. Keep the
+environment's CUDA-enabled PyTorch and install only:
 
 ```bash
-# Train; requires GPU
-python mha/train_MHA.py --loss weighted --epochs 50
-
-# Run inference with the saved checkpoint
-python mha/mha_inference.py
-# or specify your own checkpoint filename after retraining
-python mha/mha_inference.py --checkpoint outputs/MHA-trained/<your_checkpoint>.pt
+python -m pip install -r requirements-bert.txt
+bash bert/run_autodl.sh
 ```
 
-MHA checkpoint note:
-The official RAGate repository releases a RAGate-MHA checkpoint for the original model. In this paper, however, we use a reimplemented MHA baseline described in Appendix B, because the original training pipeline depends on older torchtext components and does not fully specify the exact training configuration. Large checkpoints are not bundled in this anonymous supplementary package. To rerun MHA inference/agreement/counterfactual analyses, train a compatible checkpoint with `mha/train_MHA.py` or place a compatible checkpoint under `outputs/MHA-trained/`. The aggregate results used in the paper are already provided under `results/`.
-
-### 3. LR probing
+The runner verifies the separately supplied CSV hashes before training and
+fails closed unless the complete protocol and 3x3 output are present. If the
+Hugging Face endpoint is inaccessible in mainland China, the public model can
+be fetched through a configured mirror, for example:
 
 ```bash
-# Feature-subset ablation, Table 2; uses 5-fold CV
-python probing/train_lr.py
-
-# Position-feature permutation test, Section 4.1
-python probing/position_shuffle_lr.py
-
-# KETOD threshold-tuning diagnostic; not used for the transfer table
-python probing/threshold_tuning.py
-
-# Feature importance and Spearman correlation, Figure 1 and Section 4.2
-python probing/feature_importance_spearman.py
+export HF_ENDPOINT=https://hf-mirror.com
+bash bert/run_autodl.sh
 ```
 
-### 4. Transfer and model-comparison analyses
+No checkpoint is saved unless the underlying Python command is explicitly
+invoked with `--save-models`.
+
+## 5. Reproducibility notes
+
+- KETOD uses its released test split. DSTC9/DSTC11 use released validation
+  splits as held-out evaluation sets.
+- The processed `input` field is accumulated dialogue context for all three
+  datasets and ends at the evaluated user turn.
+- MiniLM and BERT both use explicit left truncation at 256 tokens.
+- Source selection never uses held-out target labels. The target-development
+  threshold is reported only as an optimistic sensitivity analysis.
+- Formal reference values are under `reference_results/`; the authoritative
+  paper-to-file mapping is `docs/PAPER_RESULTS_MAP.md`.
+
+For the exact definitions and interpretation boundary, see
+`docs/PROTOCOL.md`.
+
+
+## 6. Raw-to-processed preprocessing
+
+The package does not redistribute benchmark payloads. Place the upstream raw
+releases in a local directory, preserving their original JSON files. KETOD
+requires both its released annotation archive and the matching Google SGD
+dialogue release; DSTC9 and DSTC11 require their official train/validation
+`logs.json` and `labels.json` files.
+
+Run the deterministic conversion into a directory outside the package:
 
 ```bash
-# Cross-dataset transfer with structural LR, Table 3 and Appendix Table 6; uses 3-fold CV
-python analysis/cross_dataset_transfer.py
-
-# LR vs MHA agreement on KETOD, Section 4.5
-python analysis/agreement_analysis.py
-
-# Counterfactual perturbation of user_has_question, Section 4.5
-python analysis/counterfactual_analysis.py
-
-# Class-conditional question-marker rates, Table 4 and Section 4.6
-python analysis/class_conditional_qrate.py
-
-# Sentence-embedding capacity check, Figure 2 and Section 4.4
-python analysis/semantic_baseline.py
-
-# BERT cross-dataset transfer, Figure 2 and Section 4.4
-python analysis/bert_transfer.py \
-    --ketod-train  data/ketod/train_full.csv \
-    --ketod-test   data/ketod/test_full.csv \
-    --dstc9-train  data/dstc9/train_dstc9.csv \
-    --dstc9-test   data/dstc9/test_dstc9.csv \
-    --dstc11-train data/dstc11/train.csv \
-    --dstc11-test  data/dstc11/val.csv \
-    --output-dir   results/
+python preprocessing/prepare_all.py \
+  --raw-root "<path-to-upstream-raw-data>" \
+  --output-root reproduced_data
 ```
 
-Note on DSTC9 training file: `train_dstc9.csv` may contain malformed rows due to unescaped quotes in dialogue text. If `pandas.read_csv` errors out, create a cleaned copy first:
+Then verify the generated files against the package manifest. If private
+historical canonical files are available locally, pass their dataset roots to
+the optional canonical-root arguments for byte and semantic comparison:
 
 ```bash
-python -c "
-import pandas as pd
-df = pd.read_csv('data/dstc9/train_dstc9.csv', engine='python', on_bad_lines='skip')
-df.to_csv('data/dstc9/train_dstc9_fixed.csv', index=False)
-print(f'Saved {len(df)} rows')
-"
+python preprocessing/verify_preprocessing.py \
+  --generated-root reproduced_data \
+  --manifest data/data_manifest.csv \
+  --report-dir preprocessing
 ```
 
-Then pass `--dstc9-train data/dstc9/train_dstc9_fixed.csv` to `bert_transfer.py`.
-
----
-
-## Results
-
-Pre-computed result files are in `results/`. The main numbers used in the paper are:
-
-| Experiment | Key result |
-|---|---|
-| Feature ablation, Table 2 | Question-type features are strong on DSTC9/11; KETOD shows no single dominant feature group. |
-| Spearman correlation, Section 4.2 | DSTC9 vs DSTC11: ρ = +0.94, p < 0.001. KETOD vs DSTC: mean ρ ≈ −0.25, p > 0.1. |
-| Structural LR transfer, Table 3 | DSTC→KETOD minority F1 ≤ 0.22 and ROC-AUC ≈ 0.48; Macro F1 alone is less informative because of KETOD class imbalance. |
-| Sentence-embedding transfer, Section 4.4 | DSTC→KETOD minority F1 = 0.12 / 0.13, compared with KETOD in-domain 0.36. |
-| Fine-tuned BERT transfer, Section 4.4 | DSTC→KETOD minority F1 = 0.10 / 0.07, while KETOD in-domain minority F1 reaches 0.50. |
-| LR–MHA agreement, Section 4.5 | Agreement 67.2%, κ = 0.25; LR false-negative cases overlap strongly with MHA failures. |
-| Counterfactual flip, Section 4.5 | Perturbing `user_has_question` flips 18.1% of LR predictions and 2.4% of MHA predictions. |
-| Class-conditional question rate, Table 4 | DSTC9/DSTC11 positives are almost always questions; KETOD positives and negatives have similar question-marker rates. |
-
-Result file layout:
-
-```text
-results/
-├── lr_results.csv                  # Table 2 feature-subset ablation
-├── transfer_results.csv            # Table 3 and Appendix Table 6
-├── spearman_rho_results.csv        # Section 4.2
-├── feature_importance.csv          # Figure 1
-├── position_shuffle_results.csv    # Section 4.1 permutation test
-├── threshold_tuning_results.csv    # KETOD threshold-tuning diagnostic
-├── agreement_results.csv           # Section 4.5 LR vs MHA
-├── counterfactual_results.csv      # Section 4.5 counterfactual flip
-├── class_conditional_qrate.csv     # Table 4
-├── semantic_results.csv            # Section 4.4 semantic baseline transfer
-└── bert_results.csv                # Section 4.4 BERT transfer
-```
-
-Stale summary files such as `results/bert_summary.txt` are intentionally excluded.
-
----
-
-## Features
-
-Ten hand-crafted structural features used for probing:
-
-| # | Feature | Description |
-|---:|---|---|
-| 1 | `turn_position_ratio` | turn index / total turns |
-| 2 | `turn_position_squared` | squared turn-position ratio |
-| 3 | `user_turn_len_log` | log(1 + user-turn tokens) |
-| 4 | `sys_turn_len_log` | log(1 + previous-system-turn tokens) |
-| 5 | `dialogue_len_log` | log(total turns) |
-| 6 | `consecutive_sys_turns` | number of consecutive system turns before the current user turn |
-| 7 | `turn_len_ratio` | user length / system length, clipped to [0, 5] |
-| 8 | `user_has_question` | user turn contains `?` |
-| 9 | `prev_sys_is_question` | previous system turn ends with `?` |
-| 10 | `user_starts_question_word` | user turn starts with what / how / where / when / why / is / does / can / do |
-
-No utterance text or semantic content is accessed by the structural LR probe.
-
----
-
-## Review-stage note
-
-This repository is an anonymous ARR supplementary code package for double-blind review and should not include author-identifying metadata.
-
----
-
-## Citation
-
-This work is currently under double-blind review at ARR 2026. Citation information will be released after the review process.
-
----
-
-## License
-
-Code is released under the MIT License. Datasets are used under their respective licenses; please refer to the source repositories for details.
-
+The converter fails closed on malformed required fields, split length
+mismatches, unknown speakers, unexpected labels, row-count violations, and
+feature invariant violations. It never writes into the raw directory or
+overwrites historical files. See `preprocessing/PREPROCESSING_AUDIT.md` and
+`preprocessing/preprocessing_manifest.json` for the verified staging record.

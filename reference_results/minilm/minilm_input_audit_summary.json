@@ -1,0 +1,10 @@
+{
+  "protocol_validation": "PASS",
+  "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+  "default_truncation_side_before_override": "right",
+  "formal_truncation_side": "left",
+  "max_len": 256,
+  "content_token_capacity": 254,
+  "all_left_current_turns_fully_retained": true,
+  "audit_csv": "minilm_input_audit.csv"
+}

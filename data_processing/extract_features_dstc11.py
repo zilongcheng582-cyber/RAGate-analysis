@@ -14,6 +14,7 @@ import csv
 import math
 import re
 import pandas as pd
+import numpy as np
 
 # ===== 路径 =====
 TRAIN_CSV = "data/dstc11/train.csv"
@@ -42,6 +43,18 @@ def parse_turns(input_text):
         turns.append({'speaker': speaker, 'text': text})
         i += 2
     return turns
+
+def label_to_int(label):
+    """Robustly parse bool/0/1 labels from the processed CSV."""
+    if isinstance(label, (bool, np.bool_)):
+        return int(label)
+    text = str(label).strip().lower()
+    if text in {"true", "1"}:
+        return 1
+    if text in {"false", "0"}:
+        return 0
+    raise ValueError(f"Unexpected DSTC11 label: {label!r}")
+
 
 def extract_features_from_input(input_text, label, idx):
     turns = parse_turns(input_text)
@@ -96,7 +109,7 @@ def extract_features_from_input(input_text, label, idx):
         'consecutive_sys_turns': consecutive_sys_turns,
         'turn_len_ratio': turn_len_ratio,
         'turn_position_squared': turn_position_squared,
-        'label': 1 if str(label).strip() == 'True' else 0
+        'label': label_to_int(label)
     }
 
 def process_file(csv_path, out_path):

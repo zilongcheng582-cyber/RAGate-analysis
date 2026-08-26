@@ -92,6 +92,12 @@ def process_file(logs_path, labels_path, out_path):
     with open(labels_path, encoding='utf-8') as f:
         labels = json.load(f)
 
+    if len(logs) != len(labels):
+        raise ValueError(
+            f"logs/labels length mismatch: {len(logs)} vs {len(labels)} "
+            f"for {logs_path} / {labels_path}"
+        )
+
     fieldnames = [
         'dialogue_id', 'turn_idx',
         'turn_position_ratio', 'prev_sys_is_question', 'user_has_question',

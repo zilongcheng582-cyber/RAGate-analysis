@@ -1,0 +1,27 @@
+{
+  "protocol_validation": "PASS",
+  "paper_values_to_update": {
+    "KETOD_to_KETOD": {
+      "macro_f1": 0.7193669142222412,
+      "pos_f1": 0.5241561879549967,
+      "neg_f1": 0.9145776404894856,
+      "roc_auc": 0.851106186517578,
+      "average_precision": 0.4863281597784536
+    },
+    "DSTC9_to_KETOD": {
+      "macro_f1": 0.4771530586115097,
+      "pos_f1": 0.0378310214375788,
+      "neg_f1": 0.9164750957854406,
+      "roc_auc": 0.5264007873822795,
+      "average_precision": 0.137624267674965
+    },
+    "DSTC11_to_KETOD": {
+      "macro_f1": 0.4761460748594425,
+      "pos_f1": 0.040621266427718,
+      "neg_f1": 0.9116708832911672,
+      "roc_auc": 0.4976072766294713,
+      "average_precision": 0.1297225482297309
+    }
+  },
+  "interpretation_rule": "Update the paper from these rerun values. The BERT capacity-check claim is supported only if both DSTC-to-KETOD directions remain weak in ranking (ROC-AUC), not merely at the fixed-threshold positive F1."
+}

@@ -34,7 +34,7 @@ def extract_features_from_dialogue(dialogue):
     total_turns = len(turns)
     rows = []
 
-    # 统计对话中 USER turn 总数（用于 dialogue_len）
+    # 统计完整对话中的 USER turn 总数（用于 retrospective audit position/dialogue length）
     user_turns = [t for t in turns if t['speaker'] == 'USER']
     dialogue_len = len(user_turns)
 
@@ -140,7 +140,8 @@ def process_file(json_path, out_path):
     pos = sum(1 for r in all_rows if r['label'] == 1)
     neg = sum(1 for r in all_rows if r['label'] == 0)
     print(f"完成: {out_path}")
-    print(f"  总样本: {len(all_rows)}, 正样本(enrich=True): {pos}, 负样本: {neg}, 比例: {neg/pos:.1f}:1")
+    ratio = neg / pos if pos else float("inf")
+    print(f"  总样本: {len(all_rows)}, 正样本(enrich=True): {pos}, 负样本: {neg}, 比例: {ratio:.1f}:1")
 
 if __name__ == '__main__':
     print("处理 KETOD train...")

@@ -1,18 +1,18 @@
-# Paper-to-artifact map
+# Paper-to-code map
 
-| Paper evidence | Reproduction code | Archived reference output |
+This map follows the tables, figures, and appendices in the accompanying
+paper. `reference_results/` contains compact reported-result tables for
+comparison; it does not contain benchmark data, predictions, embedding caches,
+model weights, or checkpoints.
+
+| Paper item | Reproduction entry point | Reference result |
 |---|---|---|
-| Dataset statistics, splits, and ten feature definitions | `preprocessing/` and `docs/PROTOCOL.md` | `data/README.md` |
-| LR feature ablation table | `lightweight/train_lr_ablation.py` | `reference_results/lightweight/lr_results.csv` |
-| Feature rankings and Spearman comparison | `lightweight/feature_importance_spearman.py` | `feature_importance.csv`, `spearman_rho_results.csv` |
-| Full 3x3 structural transfer | `lightweight/run_transfer_controls.py` | `baseline_verification.csv` |
-| No-Q transfer control | `lightweight/run_transfer_controls.py` | `no_question_*.csv` |
-| Threshold-calibration sensitivity | `lightweight/run_transfer_controls.py` | `threshold_calibration_*.csv` |
-| Current-turn question-rate control | `lightweight/run_feature_controls.py` | `class_conditional_qrate_fixed.csv` |
-| Joint position-permutation control | `lightweight/run_feature_controls.py` | `position_shuffle_group_fixed.csv` |
-| Corrected MiniLM transfer and truncation audit | `minilm/` | `reference_results/minilm/` |
-| Corrected BERT transfer and input audit | `bert/` | `reference_results/bert/` |
-
-The reference outputs are compact verification artifacts. Prediction-level
-CSVs, embedding caches, model checkpoints, pretrained weights and benchmark
-payloads are intentionally excluded from this public code package.
+| Table 1: datasets, held-out splits, and class ratios | `preprocessing/prepare_all.py`; [data/README.md](../data/README.md); `docs/PROTOCOL.md` | Data are obtained from their upstream releases and are not committed. |
+| Table 2: feature-subset LR ablation | `lightweight/train_lr_ablation.py` | `reference_results/lightweight/lr_results.csv` |
+| Figure 2: coefficient ranks and Spearman comparison | `lightweight/feature_importance_spearman.py` | `reference_results/lightweight/feature_importance.csv`, `spearman_rho_results.csv` |
+| Table 3: 3 × 3 structural transfer | `lightweight/run_transfer_controls.py` | `reference_results/lightweight/baseline_verification.csv` |
+| Table 4: current-turn question-form rates | `lightweight/run_feature_controls.py` | `reference_results/lightweight/class_conditional_qrate_fixed.csv` |
+| Figure 3: MiniLM and BERT representation checks | `minilm/minilm_transfer_ready.py`; `bert/run_autodl.sh` | `reference_results/minilm/minilm_results_ready.csv`, `reference_results/bert/bert_results_ready.csv` |
+| Appendix B: tokenization/truncation and input-overlap audits | `minilm/minilm_input_audit.py`; `bert/bert_input_audit.py` | `reference_results/minilm/minilm_input_audit*`, `reference_results/bert/bert_input_audit.csv` |
+| Appendix D: no-question and position-permutation controls | `lightweight/run_transfer_controls.py`; `lightweight/run_feature_controls.py` | `reference_results/lightweight/no_question_*.csv`, `position_shuffle_group_fixed.csv` |
+| Appendix E: source and target threshold-calibration analysis | `lightweight/run_transfer_controls.py` | `reference_results/lightweight/threshold_calibration_*.csv` |

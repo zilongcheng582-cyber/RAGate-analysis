@@ -2,7 +2,7 @@
 
 | Paper evidence | Reproduction code | Archived reference output |
 |---|---|---|
-| Dataset statistics and ten feature definitions | `data_processing/` and hashed feature CSV inputs | `data/data_manifest.csv` |
+| Dataset statistics, splits, and ten feature definitions | `preprocessing/` and `docs/PROTOCOL.md` | `data/README.md` |
 | LR feature ablation table | `lightweight/train_lr_ablation.py` | `reference_results/lightweight/lr_results.csv` |
 | Feature rankings and Spearman comparison | `lightweight/feature_importance_spearman.py` | `feature_importance.csv`, `spearman_rho_results.csv` |
 | Full 3x3 structural transfer | `lightweight/run_transfer_controls.py` | `baseline_verification.csv` |

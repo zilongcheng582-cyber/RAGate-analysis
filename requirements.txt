@@ -1,0 +1,2 @@
+# Default CPU environment for the lightweight analyses.
+-r requirements-lightweight.txt

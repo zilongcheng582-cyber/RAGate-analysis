@@ -1,10 +1,7 @@
-data/**/*.csv
-data/**/*.json
-复现/
-reproduced_data/
-data/ketod/*.csv
-data/dstc9/*.csv
-data/dstc11/*.csv
+raw_data/
+data/ketod/
+data/dstc9/
+data/dstc11/
 outputs/
 results/
 __pycache__/
@@ -16,3 +13,4 @@ __pycache__/
 *.npy
 *.npz
 .venv/
+.DS_Store

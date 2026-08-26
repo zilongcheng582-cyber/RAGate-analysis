@@ -1,8 +1,25 @@
-# Data placement
+# Data
 
-Benchmark data are not redistributed. Obtain KETOD, DSTC9 and DSTC11 from
-their original sources and place the six processed-text CSVs and six
-structural-feature CSVs as follows:
+This repository does not include benchmark data. Download the original
+releases and comply with their terms of use:
+
+- [KETOD](https://github.com/facebookresearch/ketod)
+- [Schema-Guided Dialogue (SGD)](https://github.com/google-research-datasets/dstc8-schema-guided-dialogue), used with KETOD
+- [DSTC9 Track 1](https://github.com/alexa/alexa-with-dstc9-track1-dataset)
+- [DSTC11 Track 5](https://github.com/alexa/dstc11-track5)
+
+The SGD release is CC BY-SA 4.0. DSTC9 and DSTC11 publish their licence terms
+in their respective repositories; DSTC11 Track 5 data are released under
+CDLA-Sharing 1.0. This repository only contains code derived for the paper and
+does not grant rights to those datasets.
+
+Run the converter from the repository root:
+
+```bash
+python preprocessing/prepare_all.py --raw-root raw_data --output-root data
+```
+
+It creates the ignored files below:
 
 ```text
 data/
@@ -23,41 +40,8 @@ data/
     └── test_features.csv
 ```
 
-`test_dstc9.csv` and both DSTC9 `test_features.csv` refer to the released
-validation evaluation split. For DSTC11, `val.csv` and `test_features.csv`
-refer to the released validation evaluation split, not an official leaderboard
-test set.
-
-The processed-text files must contain `input` and `output`. The `input` field
-is accumulated dialogue context ending at the evaluated user turn. The feature
-files must contain `label` plus the ten columns documented in
-`docs/PROTOCOL.md`.
-
-`data_manifest.csv` records the hashes and schemas of the exact private files
-used for the camera-ready experiments. Run:
-
-```bash
-python scripts/verify_package.py --verify-data --data-root .
-```
-
-to check separately supplied files against that manifest.
-
-The scripts in `data_processing/` preserve the historical feature-extraction
-interfaces. The executable raw-to-processed chain is in `preprocessing/`:
-
-```bash
-python preprocessing/prepare_all.py \
-  --raw-root "<path-to-upstream-raw-data>" \
-  --output-root reproduced_data
-
-python preprocessing/verify_preprocessing.py \
-  --generated-root reproduced_data \
-  --manifest data/data_manifest.csv \
-  --report-dir preprocessing
-```
-
-The KETOD stage joins the released KETOD annotations to Google SGD by
-`dialogue_id`; DSTC9 and DSTC11 serialize the official raw logs/labels into
-the canonical accumulated-context CSVs. No raw or generated benchmark data
-is committed. The hashed CSVs in `data/data_manifest.csv` remain the
-authoritative inputs for reproducing the reported lightweight results.
+The processed-text files contain `input` and `output`; `input` is accumulated
+dialogue context ending at the evaluated user turn. The feature files contain
+`label` and the ten structural features defined in
+[docs/PROTOCOL.md](../docs/PROTOCOL.md). KETOD uses the released test split;
+DSTC9 and DSTC11 use their released validation splits as held-out evaluation.

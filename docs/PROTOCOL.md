@@ -26,9 +26,9 @@ the user-specified output directory.
 - DSTC11 uses the same raw-log serialization and maps train and released
   validation to `train.csv` and `val.csv`.
 
-Structural features reuse the audited definitions and column order. The
-verification script compares row counts, schemas, labels, feature invariants,
-and (when supplied) historical canonical files.
+Structural features reuse the definitions and column order below. During
+conversion, the scripts validate split sizes, required fields, speaker values,
+binary labels, and text/feature row alignment.
 
 ## Lightweight structural probe
 

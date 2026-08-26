@@ -15,10 +15,7 @@ echo "[0/4] Checking CUDA and package versions"
 python -c "import torch; assert torch.cuda.is_available(), 'CUDA GPU is required'; print('torch=', torch.__version__); print('cuda=', torch.version.cuda); print('gpu=', torch.cuda.get_device_name(0)); print('vram_gb=', round(torch.cuda.get_device_properties(0).total_memory/1e9, 2))"
 python -c "import numpy, pandas, sklearn, transformers, safetensors; print('numpy=', numpy.__version__); print('pandas=', pandas.__version__); print('sklearn=', sklearn.__version__); print('transformers=', transformers.__version__); print('safetensors=', safetensors.__version__)"
 
-echo "[1/4] Verifying separately supplied benchmark CSVs"
-sha256sum --check bert/DATA_SHA256.txt
-
-echo "[2/4] Auditing processed inputs and truncation"
+echo "[1/3] Auditing processed inputs and truncation"
 python -u bert/bert_input_audit.py \
   --config config_paths.json \
   --model-name "$MODEL_NAME" \
@@ -26,7 +23,7 @@ python -u bert/bert_input_audit.py \
   --output outputs/bert/bert_input_audit.csv \
   2>&1 | tee outputs/bert/bert_input_audit.log
 
-echo "[3/4] Running corrected camera-ready BERT transfer"
+echo "[2/3] Running BERT transfer"
 python -u bert/bert_transfer_ready.py \
   --config config_paths.json \
   --model-name "$MODEL_NAME" \
@@ -41,7 +38,7 @@ python -u bert/bert_transfer_ready.py \
   --save-predictions \
   2>&1 | tee outputs/bert/bert_ready/train.log
 
-echo "[4/4] Validating result completeness and protocol metadata"
+echo "[3/3] Validating result completeness and protocol metadata"
 python -u bert/verify_bert_results.py \
   --result-dir outputs/bert/bert_ready \
   --output outputs/bert/bert_ready/camera_ready_bert_summary.json

@@ -15,10 +15,14 @@ def main() -> None:
     parser.add_argument("--raw-root", type=Path, required=True)
     parser.add_argument("--output-root", type=Path, required=True)
     args = parser.parse_args()
-    args.output_root.mkdir(parents=True, exist_ok=True)
-    ketod = prepare_ketod(args.raw_root, args.output_root)
-    dstc9 = prepare_dstc9(args.raw_root, args.output_root)
-    dstc11 = prepare_dstc11(args.raw_root, args.output_root)
+    raw_root = args.raw_root.resolve()
+    output_root = args.output_root.resolve()
+    if raw_root == output_root or raw_root in output_root.parents:
+        raise ValueError("--output-root must be outside --raw-root to protect the downloaded releases")
+    output_root.mkdir(parents=True, exist_ok=True)
+    ketod = prepare_ketod(raw_root, output_root)
+    dstc9 = prepare_dstc9(raw_root, output_root)
+    dstc11 = prepare_dstc11(raw_root, output_root)
     print({"KETOD": ketod, "DSTC9": dstc9, "DSTC11": dstc11})
 
 

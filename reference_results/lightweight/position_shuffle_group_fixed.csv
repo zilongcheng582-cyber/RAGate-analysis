@@ -1,0 +1,4 @@
+﻿dataset,shuffled_cols,permutation_unit,n_repeats,best_C,baseline_f1,shuffled_mean,shuffled_std,delta,max_relation_error_after_shuffle
+KETOD,turn_position_ratio;turn_position_squared,joint_row,30,10.0,0.5419374566735988,0.47792013233316405,0.005589088633476652,0.06401732434043478,2.220446049250313e-16
+DSTC9,turn_position_ratio;turn_position_squared,joint_row,30,0.1,0.7981697310998336,0.7981697310998334,2.220446049250313e-16,2.220446049250313e-16,0.0
+DSTC11,turn_position_ratio;turn_position_squared,joint_row,30,0.1,0.8424078481879251,0.8424078481879251,0.0,0.0,0.0

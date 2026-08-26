@@ -1,0 +1,20 @@
+{
+  "KETOD": {
+    "train_full": "data/ketod/train_full.csv",
+    "test_full": "data/ketod/test_full.csv",
+    "train_features": "data/ketod/train_features.csv",
+    "test_features": "data/ketod/test_features.csv"
+  },
+  "DSTC9": {
+    "train_full": "data/dstc9/train_dstc9.csv",
+    "test_full": "data/dstc9/test_dstc9.csv",
+    "train_features": "data/dstc9/train_features.csv",
+    "test_features": "data/dstc9/test_features.csv"
+  },
+  "DSTC11": {
+    "train_full": "data/dstc11/train.csv",
+    "test_full": "data/dstc11/val.csv",
+    "train_features": "data/dstc11/train_features.csv",
+    "test_features": "data/dstc11/test_features.csv"
+  }
+}

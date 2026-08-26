@@ -1,0 +1,10 @@
+{
+  "protocol_validation": "PASS",
+  "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+  "model_config_commit_hash": "c9745ed1d9f207416be6d2e6f8de32d1f16199bf",
+  "max_seq_length": 256,
+  "tokenizer_model_max_length": 256,
+  "truncation_side": "left",
+  "sentence_transformer_tokenization_matches_direct_tokenizer": true,
+  "synthetic_current_turn_retained_under_left_truncation": true
+}

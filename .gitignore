@@ -1,0 +1,16 @@
+raw_data/
+data/ketod/
+data/dstc9/
+data/dstc11/
+outputs/
+results/
+__pycache__/
+*.py[cod]
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+*.npy
+*.npz
+.venv/
+.DS_Store

@@ -1,0 +1,45 @@
+{
+  "timestamp_unix": 1787501550.682181,
+  "python": "3.12.3 | packaged by Anaconda, Inc. | (main, May  6 2024, 19:46:43) [GCC 11.2.0]",
+  "platform": "Linux-5.15.0-97-generic-x86_64-with-glibc2.35",
+  "torch": "2.5.1+cu124",
+  "cuda_available": true,
+  "cuda_version": "12.4",
+  "model_name": "bert-base-uncased",
+  "tokenizer_name_or_path": "bert-base-uncased",
+  "tokenizer_commit_hash": null,
+  "model_config_commit_hash_by_source": {
+    "KETOD": "86b5e0934494bd15c9632b12f734a8a67f723594",
+    "DSTC9": "86b5e0934494bd15c9632b12f734a8a67f723594",
+    "DSTC11": "86b5e0934494bd15c9632b12f734a8a67f723594"
+  },
+  "tokenizer_truncation_side": "left",
+  "tokenizer_model_max_length": 512,
+  "max_len": 256,
+  "epochs": 3,
+  "batch_size": 32,
+  "eval_batch_size": 64,
+  "learning_rate": 2e-05,
+  "weight_decay": 0.01,
+  "warmup_ratio": 0.1,
+  "seed": 42,
+  "num_workers": 0,
+  "config": {
+    "KETOD": {
+      "train_full": "data/ketod/train_full.csv",
+      "test_full": "data/ketod/test_full.csv"
+    },
+    "DSTC9": {
+      "train_full": "data/dstc9/train_dstc9.csv",
+      "test_full": "data/dstc9/test_dstc9.csv"
+    },
+    "DSTC11": {
+      "train_full": "data/dstc11/train.csv",
+      "test_full": "data/dstc11/val.csv"
+    }
+  },
+  "evaluation_policy": "final epoch; fixed 0.5 threshold; no target calibration or target early stopping",
+  "average_precision_definition": "sklearn.metrics.average_precision_score",
+  "overlap_policy": "report raw exact-string overlap and exact non-padding tokenized input_ids overlap; model_input_nonoverlap is the primary BERT overlap sensitivity",
+  "transformers": "5.3.0"
+}

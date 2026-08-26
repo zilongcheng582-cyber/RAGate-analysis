@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "If you use this code, please cite the accompanying paper."
+title: "Probing Benchmark-Specific Regularities in Knowledge Gating via Lightweight Feature Analysis"
+type: software
+authors:
+  - family-names: Cheng
+    given-names: Zilong
+  - family-names: Chen
+    given-names: Yubo
+  - family-names: Sun
+    given-names: Jingbo
+  - family-names: Gao
+    given-names: Ge
+  - family-names: Chen
+    given-names: Bo
+  - family-names: Zhao
+    given-names: Xiaobing
+date-released: 2026-08-26

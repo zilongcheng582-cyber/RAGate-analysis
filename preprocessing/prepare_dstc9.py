@@ -4,12 +4,14 @@ from __future__ import annotations
 
 import argparse
 from pathlib import Path
+import re
 
 from common import FEATURE_COLUMNS, dstc9_feature_row, load_json, serialize_turns, write_csv
 
 
 EXPECTED_ROWS = {"train": 71348, "val": 9663}
 SPEAKER_MAP = {"U": "USER", "S": "SYSTEM"}
+DSTC9_COMPONENT = re.compile(r"(?:^|[^a-z0-9])dstc9(?:[^a-z0-9]|$)", re.IGNORECASE)
 
 
 def _raw_file(raw_root: Path, split: str, name: str) -> Path:
@@ -18,11 +20,17 @@ def _raw_file(raw_root: Path, split: str, name: str) -> Path:
         path
         for path in raw_root.rglob(name)
         if path.is_file()
-        and "dstc9" in {part.lower() for part in path.relative_to(raw_root).parts}
-        and path.as_posix().endswith(suffix.as_posix())
+        and any(DSTC9_COMPONENT.search(part) for part in path.relative_to(raw_root).parts)
+        and path.relative_to(raw_root).parts[-3:] == suffix.parts
     )
-    if len(matches) != 1:
-        raise FileNotFoundError(f"expected exactly one DSTC9 {suffix}, found {len(matches)}")
+    if not matches:
+        raise FileNotFoundError(
+            f"DSTC9 raw file not found: expected data/{split}/{name} below {raw_root} "
+            "under a directory component containing the token 'dstc9'"
+        )
+    if len(matches) > 1:
+        candidates = ", ".join(str(path) for path in matches)
+        raise RuntimeError(f"ambiguous DSTC9 data/{split}/{name}; candidates: {candidates}")
     return matches[0]
 
 

@@ -6,6 +6,13 @@ KETOD uses its released train/test processed splits. DSTC9 and DSTC11 use the
 released validation splits as held-out evaluation sets. All formal experiments
 use random seed 42.
 
+The official acquisition URLs, expected split counts, extraction instructions,
+and third-party licensing boundary are documented in `docs/DATA_ACQUISITION.md`.
+In shared code, a variable named `test` denotes the paper's held-out split; for
+DSTC9/DSTC11 this is released validation, not a hidden leaderboard test. No
+formal upstream commit/tag was recorded, so the repository makes no such claim
+and instead validates the released example counts during preprocessing.
+
 ## Raw-to-processed serialization
 
 The executable conversion chain is in `preprocessing/`. It is deterministic,
@@ -26,9 +33,9 @@ the user-specified output directory.
 - DSTC11 uses the same raw-log serialization and maps train and released
   validation to `train.csv` and `val.csv`.
 
-Structural features reuse the definitions and column order below. During
-conversion, the scripts validate split sizes, required fields, speaker values,
-binary labels, and text/feature row alignment.
+Structural features reuse the audited definitions and column order. The
+verification script compares row counts, schemas, labels, feature invariants,
+and (when supplied) historical canonical files.
 
 ## Lightweight structural probe
 

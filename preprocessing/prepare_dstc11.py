@@ -4,12 +4,14 @@ from __future__ import annotations
 
 import argparse
 from pathlib import Path
+import re
 
 from common import FEATURE_COLUMNS, load_json, processed_feature_row, serialize_turns, write_csv
 
 
 EXPECTED_ROWS = {"train": 28431, "val": 4173}
 SPEAKER_MAP = {"U": "USER", "S": "SYSTEM"}
+DSTC11_COMPONENT = re.compile(r"(?:^|[^a-z0-9])dstc11(?:[^a-z0-9]|$)", re.IGNORECASE)
 
 
 def _raw_file(raw_root: Path, split: str, name: str) -> Path:
@@ -18,11 +20,17 @@ def _raw_file(raw_root: Path, split: str, name: str) -> Path:
         path
         for path in raw_root.rglob(name)
         if path.is_file()
-        and "dstc11" in {part.lower() for part in path.relative_to(raw_root).parts}
-        and path.as_posix().endswith(suffix.as_posix())
+        and any(DSTC11_COMPONENT.search(part) for part in path.relative_to(raw_root).parts)
+        and path.relative_to(raw_root).parts[-3:] == suffix.parts
     )
-    if len(matches) != 1:
-        raise FileNotFoundError(f"expected exactly one DSTC11 {suffix}, found {len(matches)}")
+    if not matches:
+        raise FileNotFoundError(
+            f"DSTC11 raw file not found: expected data/{split}/{name} below {raw_root} "
+            "under a directory component containing the token 'dstc11'"
+        )
+    if len(matches) > 1:
+        candidates = ", ".join(str(path) for path in matches)
+        raise RuntimeError(f"ambiguous DSTC11 data/{split}/{name}; candidates: {candidates}")
     return matches[0]
 
 

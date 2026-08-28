@@ -11,7 +11,7 @@ export TOKENIZERS_PARALLELISM=false
 
 MODEL_NAME="bert-base-uncased"
 
-echo "[0/4] Checking CUDA and package versions"
+echo "[0/3] Checking CUDA and package versions"
 python -c "import torch; assert torch.cuda.is_available(), 'CUDA GPU is required'; print('torch=', torch.__version__); print('cuda=', torch.version.cuda); print('gpu=', torch.cuda.get_device_name(0)); print('vram_gb=', round(torch.cuda.get_device_properties(0).total_memory/1e9, 2))"
 python -c "import numpy, pandas, sklearn, transformers, safetensors; print('numpy=', numpy.__version__); print('pandas=', pandas.__version__); print('sklearn=', sklearn.__version__); print('transformers=', transformers.__version__); print('safetensors=', safetensors.__version__)"
 
@@ -23,7 +23,7 @@ python -u bert/bert_input_audit.py \
   --output outputs/bert/bert_input_audit.csv \
   2>&1 | tee outputs/bert/bert_input_audit.log
 
-echo "[2/3] Running BERT transfer"
+echo "[2/3] Running BERT transfer experiment"
 python -u bert/bert_transfer_ready.py \
   --config config_paths.json \
   --model-name "$MODEL_NAME" \

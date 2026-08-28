@@ -1,92 +1,108 @@
-# Probing Benchmark-Specific Regularities in Knowledge Gating via Lightweight Feature Analysis
+# RAGate-analysis: EMNLP 2026 camera-ready reproducibility repository
 
-Code for the experiments in the accompanying paper, *Probing Benchmark-Specific
-Regularities in Knowledge Gating via Lightweight Feature Analysis*. The package
-converts the released raw data into the paper's processed inputs, runs the
-lightweight structural analyses, and includes MiniLM and fine-tuned BERT
-representation checks.
+This repository provides the code, protocol, preprocessing pipeline, and compact
+reference results for the paper's lightweight structural probe, MiniLM
+representation check, and fine-tuned BERT representation check.
 
-The repository does **not** redistribute KETOD, SGD, DSTC9, or DSTC11 data;
-model weights; checkpoints; prediction files; or embedding caches. Follow the
-original data licences and terms of use.
+## A. License
 
-## Paper scope and reported findings
+Original software in this repository is released under the [MIT License](LICENSE).
+KETOD, SGD, DSTC9, and DSTC11 remain subject to their respective upstream
+licenses. Their benchmark data are not redistributed here, and this repository's
+MIT License grants no rights to third-party data or code.
 
-The paper uses logistic regression over ten dialogue-metadata cues (position,
-length, and question form), without utterance semantics, as a **dataset-audit
-probe** for knowledge-gating labels. It does not present this probe as an
-online gating model or as a causal account of how the benchmarks were built.
+## B. Environment
 
-- Transfer within the related DSTC9/DSTC11 pair is strong (macro F1
-  0.836 and 0.810; ROC-AUC 0.900 and 0.906).
-- Across the KETOD--DSTC boundary, structural-transfer ordering is weak
-  (ROC-AUC 0.412--0.481), and DSTC-to-KETOD positive-class F1 is
-  0.224/0.209.
-- The qualitative DSTC-to-KETOD weakness also appears with accumulated-context
-  MiniLM embeddings and fine-tuned BERT. The paper separately audits exact
-  source-training/target-held-out input overlap after tokenization and left
-  truncation.
-
-The paper treats KETOD versus DSTC9/11 as a benchmark-family comparison:
-the datasets differ jointly in corpus, annotation procedure, and label
-distribution, so the reported gap is not a causal attribution to one factor.
-
-## Datasets and evaluation splits
-
-| Dataset | Train | Held-out | Training ratio (negative:positive) | Paper description |
-|---|---:|---:|---:|---|
-| KETOD | 41,939 | 4,964 | 7.4:1 | Entity-linked enrichment of SGD dialogues |
-| DSTC9 | 71,348 | 9,663 | 2.7:1 | Knowledge-seeking turns |
-| DSTC11 | 28,431 | 4,173 | 1.0:1 | Subjective knowledge seeking |
-
-KETOD uses its released test split. DSTC9 and DSTC11 use their released
-validation splits as held-out evaluation; a code variable named `test` refers
-to this held-out split, not a hidden leaderboard test.
-
-## Repository layout
-
-- `preprocessing/`: deterministic conversion from the released raw data to the
-  processed-text and structural-feature CSVs used by this paper.
-- `lightweight/`: LR ablation, feature ranking, transfer, No-Q,
-  threshold-calibration, question-rate, and position-permutation analyses.
-- `minilm/`: accumulated-context MiniLM + LR transfer experiment and input
-  truncation audit.
-- `bert/`: fine-tuned BERT transfer experiment and input audit.
-- `reference_results/`: compact result tables reported in the paper.
-- `docs/`: protocol and paper-to-file mapping.
-
-## Environment
-
-The lightweight experiments run on CPU:
+Use separate environments for the three experiment families. The lightweight
+experiments require NumPy, pandas, scikit-learn, SciPy, and Matplotlib and run
+on CPU:
 
 ```bash
-python -m venv .venv
-python -m pip install -r requirements.txt
+python -m venv .venv-lightweight
+source .venv-lightweight/bin/activate
+# Windows PowerShell:
+# .\.venv-lightweight\Scripts\Activate.ps1
+
+python -m pip install -r requirements-lightweight.txt
 ```
 
-For MiniLM, install `requirements-minilm.txt`. The formal MiniLM run used
-`sentence-transformers==5.2.2`,
-`sentence-transformers/all-MiniLM-L6-v2`, and seed 42.
+MiniLM additionally uses sentence-transformers and PyTorch:
 
-The BERT experiment requires Linux and a CUDA GPU with at least 24 GB VRAM.
-The reported BERT run used Python 3.12.3, PyTorch 2.5.1+cu124, CUDA 12.4, and
-`transformers==5.3.0`; install a CUDA-enabled PyTorch build appropriate for
-your system, then install `requirements-bert.txt`.
+```bash
+python -m venv .venv-minilm
+source .venv-minilm/bin/activate
+# Windows PowerShell:
+# .\.venv-minilm\Scripts\Activate.ps1
 
-## Data acquisition and preprocessing
+python -m pip install -r requirements-minilm.txt
+```
 
-Download the upstream releases without modifying their contents:
+BERT requires a Linux CUDA environment with at least 24 GB GPU memory. Keep the
+environment's CUDA-enabled PyTorch, then install:
+
+```bash
+python -m pip install -r requirements-bert.txt
+```
+
+Repository and locator tests use:
+
+```bash
+python -m pip install -r requirements-test.txt
+```
+
+## C. Data acquisition
+
+Obtain, license, and unpack data yourself from the official upstream repositories:
 
 - KETOD: <https://github.com/facebookresearch/ketod>
-- Schema-Guided Dialogue (SGD), required to recover the KETOD dialogue text:
-  <https://github.com/google-research-datasets/dstc8-schema-guided-dialogue>
+- Schema-Guided Dialogue (SGD): <https://github.com/google-research-datasets/dstc8-schema-guided-dialogue>
 - DSTC9 Track 1: <https://github.com/alexa/alexa-with-dstc9-track1-dataset>
 - DSTC11 Track 5: <https://github.com/alexa/dstc11-track5>
 
-Place these releases under one local `raw_data/` directory. The converter
-locates KETOD annotations, SGD dialogue shards, and the DSTC train/validation
-`logs.json`/`labels.json` files recursively. It writes the paper inputs to the
-ignored `data/{ketod,dstc9,dstc11}/` directories:
+The KETOD release ZIP must be extracted. `prepare_ketod.py` recursively locates
+the extracted `train_ketod.json` and `test_ketod.json`, plus SGD's
+`train/dialogues_*.json` and `test/dialogues_*.json`. Upstream repositories may
+keep their default clone names. One valid layout is:
+
+```text
+raw_data/
+├── ketod/
+│   ├── ... upstream repository files ...
+│   └── ... extracted release .../
+│       ├── train_ketod.json
+│       └── test_ketod.json
+├── dstc8-schema-guided-dialogue/
+│   ├── train/
+│   │   └── dialogues_*.json
+│   ├── dev/
+│   │   └── dialogues_*.json
+│   └── test/
+│       └── dialogues_*.json
+├── alexa-with-dstc9-track1-dataset/
+│   └── data/
+│       ├── train/
+│       │   ├── logs.json
+│       │   └── labels.json
+│       └── val/
+│           ├── logs.json
+│           └── labels.json
+└── dstc11-track5/
+    └── data/
+        ├── train/
+        │   ├── logs.json
+        │   └── labels.json
+        └── val/
+            ├── logs.json
+            └── labels.json
+```
+
+See [docs/DATA_ACQUISITION.md](docs/DATA_ACQUISITION.md) for provenance,
+split semantics, and the versioning limitation. No upstream commit/tag was
+recorded in the original experiment provenance, so none is claimed here.
+
+## D. Preprocessing
+
+From the repository root, convert all three benchmarks with:
 
 ```bash
 python preprocessing/prepare_all.py \
@@ -94,14 +110,23 @@ python preprocessing/prepare_all.py \
   --output-root data
 ```
 
-The command checks the expected split sizes and fails on malformed speakers,
-labels, or incompatible raw layouts. KETOD uses its released test split;
-DSTC9 and DSTC11 use their released validation splits as held-out evaluation.
-KETOD processing recovers the dialogue text from SGD shards, while DSTC9/11
-processing reads the released dialogue logs and labels. See
-[data/README.md](data/README.md) for expected files and licences.
+The converter validates these exact released example counts:
 
-## Reproduce the lightweight analyses
+| Dataset | Training | Held-out | Released held-out split |
+|---|---:|---:|---|
+| KETOD | 41,939 | 4,964 | test |
+| DSTC9 | 71,348 | 9,663 | validation |
+| DSTC11 | 28,431 | 4,173 | validation |
+
+In processed filenames and code, `test` means the held-out split used by this
+paper; for DSTC9/DSTC11 it does not mean a hidden leaderboard test. The
+converter never downloads, deletes, or modifies upstream data. Generated files
+can be checked with `preprocessing/verify_preprocessing.py`; see
+[data/README.md](data/README.md).
+
+## E. Lightweight reproduction
+
+After preprocessing, run the four CPU commands:
 
 ```bash
 python lightweight/train_lr_ablation.py \
@@ -117,15 +142,16 @@ python lightweight/run_feature_controls.py \
   --config config_paths.json --output-dir outputs/lightweight/controls
 ```
 
-These commands reproduce the structural results: Table 2, Figure 2, Table 3,
-Table 4, and the Appendix D--E controls. The exact code/output mapping is in
-[docs/PAPER_RESULTS_MAP.md](docs/PAPER_RESULTS_MAP.md).
+The feature-importance command writes the paper-ready normalized
+`figure2_feature_importance.png` separately from the unnormalized signed
+diagnostic plot.
 
-## Reproduce the MiniLM check
+## F. MiniLM reproduction
+
+The formal model is `sentence-transformers/all-MiniLM-L6-v2`, with accumulated
+context, explicit left truncation at 256 tokens, and seed 42:
 
 ```bash
-python -m pip install -r requirements-minilm.txt
-
 python minilm/minilm_input_audit.py \
   --config config_paths.json --data-root . --output-dir outputs/minilm
 
@@ -133,37 +159,55 @@ python minilm/minilm_transfer_ready.py \
   --config config_paths.json --data-root . --output-dir outputs/minilm \
   --truncation-side left --max-len 256
 
-python minilm/verify_minilm_results.py --results-dir outputs/minilm
+python minilm/verify_minilm_results.py \
+  --results-dir outputs/minilm
 ```
 
-On the first run, allow the public `all-MiniLM-L6-v2` model to download. Use
-`--local-files-only` only after that exact model is present in the local cache.
+Allow the official model to download on the first run. Use
+`--local-files-only` only when that exact model is cached. The verifier requires
+a complete rerun bundle: nine `pred_*.csv` files, `run_metadata.json`, result
+tables, audits, and hashes. By contrast, `reference_results/minilm/` is a
+compact paper-reference directory and is intentionally **not** valid input to the
+full-run verifier.
 
-## Reproduce the BERT check
+## G. BERT reproduction
+
+The formal BERT run uses full `bert-base-uncased` fine-tuning (no freezing),
+three epochs, AdamW at `2e-5`, weight decay `0.01`, 10% linear warmup/decay,
+batch size 32, class-frequency-weighted cross entropy, threshold 0.5, seed 42,
+and explicit left truncation at 256 tokens:
 
 ```bash
-python -m pip install -r requirements-bert.txt
 bash bert/run_autodl.sh
 ```
 
-The runner trains the full `bert-base-uncased` model for three epochs with
-explicit left truncation at 256 tokens and saves outputs under `outputs/bert/`.
-It does not save checkpoints unless `--save-models` is explicitly passed to
-`bert_transfer_ready.py`.
+No target calibration or dev early stopping is used. No checkpoint is saved
+unless the underlying Python command is explicitly invoked with `--save-models`.
 
-## Interpreting reruns
+## H. Paper-to-code map
 
-- All formal experiments use seed 42. The full model, hyperparameter, split,
-  feature, and evaluation definitions are in
-  [docs/PROTOCOL.md](docs/PROTOCOL.md).
-- `reference_results/` is provided for comparison with the paper; rerunning
-  GPU experiments can show small platform-dependent numerical differences.
-- The structural probe is a dataset audit. KETOD position and dialogue-length
-  variables are retrospective metadata, not features available at inference
-  time.
+The authoritative mapping is [docs/PAPER_RESULTS_MAP.md](docs/PAPER_RESULTS_MAP.md).
+Figures 2 and 3 can be regenerated without model training from compact CSVs:
 
-## Licence
+```bash
+python scripts/make_paper_figures.py \
+  --reference-root reference_results \
+  --output-dir outputs/paper_figures
+```
 
-The original datasets retain their own licences and must not be redistributed
-through this repository. The authors should add the intended outbound software
-licence for this repository before public archival.
+## I. Reference results and repository verification
+
+`reference_results/` contains compact reported-result tables and small audit
+summaries. It is not raw benchmark data, a prediction-level verifier bundle,
+an embedding cache, or a set of model artifacts. Prediction CSVs, weights,
+checkpoints, benchmark payloads, caches, and logs are intentionally excluded.
+
+Run the dependency-free repository/protocol sanity checker and the tests with:
+
+```bash
+python scripts/verify_package.py
+pytest -q
+```
+
+For the exact experimental definitions and interpretation boundary, see
+[docs/PROTOCOL.md](docs/PROTOCOL.md).

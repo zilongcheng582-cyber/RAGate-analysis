@@ -247,6 +247,14 @@ def token_id_digests(
     return digests
 
 
+def write_result_hashes(output_dir: Path) -> None:
+    rows = []
+    for path in sorted(output_dir.glob("*")):
+        if path.is_file() and path.name != "RESULTS_SHA256.txt":
+            rows.append(f"{hashlib.sha256(path.read_bytes()).hexdigest()}  {path.name}")
+    (output_dir / "RESULTS_SHA256.txt").write_text("\n".join(rows) + "\n", encoding="utf-8")
+
+
 def main() -> None:
     args = parse_args()
     if args.model_name != MODEL_NAME:
@@ -435,6 +443,7 @@ def main() -> None:
     (output_dir / "camera_ready_minilm_summary.json").write_text(
         json.dumps(paper_summary, indent=2), encoding="utf-8"
     )
+    write_result_hashes(output_dir)
     print(f"Saved formal results -> {result_path}", flush=True)
 
 

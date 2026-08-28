@@ -2,9 +2,7 @@
 """Dependency-free sanity checker for the public reproducibility repository."""
 from __future__ import annotations
 
-import argparse
 import csv
-import hashlib
 import json
 import re
 import subprocess
@@ -14,14 +12,6 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 DATASETS = ("KETOD", "DSTC9", "DSTC11")
 EXPECTED_PAIRS = {(source, target) for source in DATASETS for target in DATASETS}
-
-
-def sha256(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for block in iter(lambda: handle.read(1024 * 1024), b""):
-            digest.update(block)
-    return digest.hexdigest()
 
 
 def read_rows(path: Path) -> list[dict[str, str]]:
@@ -47,30 +37,7 @@ def repository_files() -> list[Path]:
     return [path for path in ROOT.rglob("*") if path.is_file()]
 
 
-def verify_data(data_root: Path, failures: list[str]) -> int:
-    manifest = read_rows(ROOT / "data" / "data_manifest.csv")
-    for row in manifest:
-        path = data_root / row["relative_path"]
-        require(path.is_file(), f"missing data file: {row['relative_path']}", failures)
-        if path.is_file():
-            require(
-                path.stat().st_size == int(row["bytes"]),
-                f"data size mismatch: {row['relative_path']}",
-                failures,
-            )
-            require(
-                sha256(path) == row["sha256"],
-                f"data hash mismatch: {row['relative_path']}",
-                failures,
-            )
-    return len(manifest)
-
-
 def main() -> int:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--verify-data", action="store_true")
-    parser.add_argument("--data-root", type=Path, default=ROOT)
-    args = parser.parse_args()
     failures: list[str] = []
 
     required = (
@@ -255,10 +222,6 @@ def main() -> int:
             failures,
         )
 
-    data_count = 0
-    if args.verify_data:
-        data_count = verify_data(args.data_root.resolve(), failures)
-
     if failures:
         print("PACKAGE_AUDIT=FAIL")
         for failure in failures:
@@ -274,8 +237,6 @@ def main() -> int:
     print("lightweight_protocol=PASS")
     print("minilm_protocol_and_3x3_results=PASS")
     print("bert_protocol_and_3x3_results=PASS")
-    if args.verify_data:
-        print(f"verified_data_files={data_count}")
     return 0
 
 

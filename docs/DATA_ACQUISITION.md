@@ -49,7 +49,7 @@ The original experiment provenance did not record upstream commit hashes or tags
 Accordingly, this document does not claim that a current upstream HEAD is the
 exact formal version and does not invent a revision identifier. The repository
 instead validates the expected released split sizes during preprocessing and
-provides hashes of the exact private processed inputs in `data/data_manifest.csv`.
+records expected row counts, schemas, and split notes in `data/data_manifest.csv`.
 
 All benchmark data retain their upstream licenses. The repository's MIT License
 applies only to original repository software and grants no third-party data rights.

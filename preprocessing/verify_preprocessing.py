@@ -157,17 +157,18 @@ def verify(args: argparse.Namespace) -> dict[str, Any]:
         manifest = manifest_rows.get(f"data/{relative}", {})
         if not generated.exists():
             raise FileNotFoundError(generated)
-        generated_hash = sha256(generated)
         header, rows = read_csv(generated)
         expected = EXPECTED_ROWS[f"{dataset}/{split}"]
         if len(rows) != expected:
             differences.append({"dataset": dataset, "split": split, "row_index": "count", "column": "__row_count__", "reconstructed_value": str(len(rows)), "canonical_value": str(expected), "source_raw_identifier": ""})
-        if manifest and (manifest.get("sha256", "").lower() != generated_hash.lower() or int(manifest.get("rows", expected)) != len(rows)):
-            differences.append({"dataset": dataset, "split": split, "row_index": "manifest", "column": "__manifest__", "reconstructed_value": f"hash={generated_hash};rows={len(rows)}", "canonical_value": f"hash={manifest.get('sha256')};rows={manifest.get('rows')}", "source_raw_identifier": ""})
+        if manifest and int(manifest.get("rows", expected)) != len(rows):
+            differences.append({"dataset": dataset, "split": split, "row_index": "manifest", "column": "__row_count__", "reconstructed_value": str(len(rows)), "canonical_value": str(manifest.get("rows")), "source_raw_identifier": ""})
         canonical = canonical_path(args, dataset, relative)
         byte_exact = None
         semantic_exact = None
+        result = {"dataset": dataset, "split": split, "relative_path": relative, "canonical": "LOCAL-ONLY oracle supplied via CLI" if canonical else None, "byte_exact": byte_exact, "semantic_exact": semantic_exact, "rows": len(rows), "columns": header}
         if canonical is not None and canonical.exists():
+            generated_hash = sha256(generated)
             canonical_hash = sha256(canonical)
             byte_exact = generated_hash.lower() == canonical_hash.lower()
             if byte_exact:
@@ -177,7 +178,8 @@ def verify(args: argparse.Namespace) -> dict[str, Any]:
                 semantic_exact, _ = compare_rows(dataset, split, generated, canonical, differences)
                 if len(differences) > before and semantic_exact:
                     semantic_exact = False
-        results.append({"dataset": dataset, "split": split, "relative_path": relative, "generated_sha256": generated_hash, "canonical": "LOCAL-ONLY oracle supplied via CLI" if canonical else None, "byte_exact": byte_exact, "semantic_exact": semantic_exact, "rows": len(rows), "columns": header})
+            result.update({"generated_sha256": generated_hash, "byte_exact": byte_exact, "semantic_exact": semantic_exact})
+        results.append(result)
 
     # Cross-file label and feature invariants.
     for dataset, split, relative, text_name, feature_name in FILES:

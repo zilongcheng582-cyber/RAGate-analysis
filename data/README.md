@@ -52,12 +52,8 @@ Processed text files contain accumulated dialogue context ending at the
 evaluated USER turn and an `output` label. Feature files contain `label` plus
 the exact ten columns in [`docs/PROTOCOL.md`](../docs/PROTOCOL.md).
 
-`data_manifest.csv` records hashes and schemas of the private canonical inputs
-used for the formal experiments. To check separately supplied canonical files:
-
-```bash
-python scripts/verify_package.py --verify-data --data-root .
-```
+`data_manifest.csv` records the expected row counts, schemas, and split notes
+for the processed files used by the formal experiments.
 
 To verify newly generated files structurally (and optionally compare private
 canonical files when available):

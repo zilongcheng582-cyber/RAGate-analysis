@@ -1,8 +1,13 @@
-# RAGate-analysis: EMNLP 2026 camera-ready reproducibility repository
+# RAGate-analysis
 
-This repository provides the code, protocol, preprocessing pipeline, and compact
-reference results for the paper's lightweight structural probe, MiniLM
-representation check, and fine-tuned BERT representation check.
+Official reproducibility repository for:
+
+**Probing Benchmark-Specific Regularities in Knowledge Gating via Lightweight Feature Analysis**<br>
+EMNLP 2026
+
+This repository provides the preprocessing pipeline, lightweight structural
+probe, MiniLM and BERT representation checks, and compact reference results
+used in the paper.
 
 ## A. License
 

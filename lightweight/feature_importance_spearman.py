@@ -10,7 +10,8 @@ Usage:
 输出：
     feature_importance.csv         — 各数据集的特征重要性（标准化系数）
     spearman_rho_results.csv       — 两两 Spearman rho + p-value
-    feature_importance_plot.png    — 特征重要性对比图
+    figure2_feature_importance.png — 论文 Figure 2（数据集内归一化绝对系数）
+    feature_importance_diagnostic.png — 原始绝对/有符号系数诊断图
 """
 
 import argparse
@@ -18,6 +19,7 @@ import warnings
 warnings.filterwarnings("ignore")
 
 import os
+import sys
 import tempfile
 from pathlib import Path
 joblib_tmp = Path(tempfile.gettempdir()) / "camera_ready_importance_joblib"
@@ -35,6 +37,10 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import Pipeline
 from sklearn.model_selection import StratifiedKFold, GridSearchCV
+
+REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(REPOSITORY_ROOT))
+from figure2_spec import PAPER_FIGURE2_LABELS, PAPER_FIGURE2_ORDER
 
 # ─────────────────────────────────────────────
 # 配置
@@ -69,8 +75,8 @@ ALL_FEATURES = [
     "turn_position_squared",      # 10
 ]
 
-# 简短显示名（图用）
-FEATURE_LABELS = [
+# Diagnostic display names follow the unchanged training feature order.
+DIAGNOSTIC_FEATURE_LABELS = [
     "pos_ratio",       # 1
     "prev_sys_q",      # 2
     "user_q",          # 3
@@ -149,7 +155,7 @@ def run(datasets, output_dir: Path):
         coef_records[ds_name] = coef
         abs_records[ds_name]  = abs_coef
         print(f"  best_C = {best_c}")
-        for fname, c, ac in zip(FEATURE_LABELS, coef, abs_coef):
+        for fname, c, ac in zip(DIAGNOSTIC_FEATURE_LABELS, coef, abs_coef):
             bar = "█" * int(ac * 20)
             sign = "+" if c >= 0 else "-"
             print(f"  {fname:<15s}  {sign}{ac:.4f}  {bar}")
@@ -165,7 +171,9 @@ def run(datasets, output_dir: Path):
 
     # 加 rank 列（每个数据集内按重要性排名）
     for ds in datasets:
-        fi_df[f"{ds}_rank"] = fi_df[ds].rank(ascending=False).astype(int)
+        fi_df[f"{ds}_rank"] = fi_df[ds].rank(
+            ascending=False, method="min"
+        ).astype(int)
 
     fi_df.to_csv(output_dir / "feature_importance.csv")
     print(f"\nSaved → {output_dir / 'feature_importance.csv'}")
@@ -206,7 +214,7 @@ def run(datasets, output_dir: Path):
     print(f"{'Feature':<25}" + "".join(f"{ds:>12}" for ds in ds_names)
           + "".join(f"  {ds}_rank" for ds in ds_names))
     print("-"*70)
-    for feat, label in zip(ALL_FEATURES, FEATURE_LABELS):
+    for feat, label in zip(ALL_FEATURES, DIAGNOSTIC_FEATURE_LABELS):
         row = f"{label:<25}"
         for ds in ds_names:
             row += f"{fi_df.loc[feat, ds]:>12.4f}"
@@ -219,13 +227,13 @@ def run(datasets, output_dir: Path):
     fi_df["rank_std"] = fi_df[rank_cols].std(axis=1)
     print("\nMost inconsistent features (largest rank std across datasets):")
     for feat in fi_df["rank_std"].sort_values(ascending=False).head(3).index:
-        label = FEATURE_LABELS[ALL_FEATURES.index(feat)]
+        label = DIAGNOSTIC_FEATURE_LABELS[ALL_FEATURES.index(feat)]
         ranks = [fi_df.loc[feat, f"{ds}_rank"] for ds in ds_names]
         print(f"  {label:<20s}  ranks={ranks}  std={fi_df.loc[feat,'rank_std']:.2f}")
 
     print("\nMost consistent features (smallest rank std):")
     for feat in fi_df["rank_std"].sort_values(ascending=True).head(3).index:
-        label = FEATURE_LABELS[ALL_FEATURES.index(feat)]
+        label = DIAGNOSTIC_FEATURE_LABELS[ALL_FEATURES.index(feat)]
         ranks = [fi_df.loc[feat, f"{ds}_rank"] for ds in ds_names]
         print(f"  {label:<20s}  ranks={ranks}  std={fi_df.loc[feat,'rank_std']:.2f}")
 
@@ -237,9 +245,38 @@ def run(datasets, output_dir: Path):
 
 def plot_feature_importance(fi_df, abs_records, coef_records, ds_names, output_dir):
     colors = ["steelblue", "darkorange", "seagreen"]
-    x = np.arange(len(ALL_FEATURES))
     width = 0.25
 
+    # Paper Figure 2: absolute standardized coefficients, normalized within
+    # each dataset. This plotting-only scaling does not affect stored raw
+    # coefficients or the Spearman calculation above.
+    paper_indices = [ALL_FEATURES.index(feature) for feature in PAPER_FIGURE2_ORDER]
+    paper_labels = [PAPER_FIGURE2_LABELS[feature] for feature in PAPER_FIGURE2_ORDER]
+    x = np.arange(len(PAPER_FIGURE2_ORDER))
+    fig, ax = plt.subplots(figsize=(13, 5))
+    for i, (ds, color) in enumerate(zip(ds_names, colors)):
+        vals = np.asarray(abs_records[ds], dtype=float)[paper_indices]
+        max_val = vals.max()
+        if max_val > 0:
+            vals = vals / max_val
+        if max_val > 0 and not np.isclose(vals.max(), 1.0):
+            raise AssertionError(f"{ds}: normalized Figure 2 maximum is not 1")
+        ax.bar(x + i * width, vals, width, label=ds, color=color, alpha=0.85)
+    ax.set_xticks(x + width)
+    ax.set_xticklabels(paper_labels, rotation=35, ha="right", fontsize=9)
+    ax.set_ylabel("Normalized |coefficient|")
+    ax.set_title("Feature Importance — Normalized |Standardized LR Coefficient|")
+    ax.legend()
+    ax.grid(axis="y", alpha=0.3)
+    plt.tight_layout()
+    figure2_path = output_dir / "figure2_feature_importance.png"
+    plt.savefig(figure2_path, dpi=150)
+    plt.close()
+    print(f"Saved → {figure2_path}")
+
+    # Separate diagnostic output retains the unnormalized absolute and signed
+    # coefficients for model inspection; it is not the paper Figure 2.
+    x = np.arange(len(ALL_FEATURES))
     fig, axes = plt.subplots(2, 1, figsize=(13, 9))
 
     # 上图：abs coef（重要性）
@@ -248,7 +285,7 @@ def plot_feature_importance(fi_df, abs_records, coef_records, ds_names, output_d
         vals = [abs_records[ds][j] for j in range(len(ALL_FEATURES))]
         ax.bar(x + i * width, vals, width, label=ds, color=color, alpha=0.85)
     ax.set_xticks(x + width)
-    ax.set_xticklabels(FEATURE_LABELS, rotation=35, ha="right", fontsize=9)
+    ax.set_xticklabels(DIAGNOSTIC_FEATURE_LABELS, rotation=35, ha="right", fontsize=9)
     ax.set_ylabel("|Coefficient| (standardized)")
     ax.set_title("Feature Importance — |LR Coefficient| on Standardized Features")
     ax.legend()
@@ -261,14 +298,14 @@ def plot_feature_importance(fi_df, abs_records, coef_records, ds_names, output_d
         ax2.bar(x + i * width, vals, width, label=ds, color=color, alpha=0.85)
     ax2.axhline(0, color="black", linewidth=0.8)
     ax2.set_xticks(x + width)
-    ax2.set_xticklabels(FEATURE_LABELS, rotation=35, ha="right", fontsize=9)
+    ax2.set_xticklabels(DIAGNOSTIC_FEATURE_LABELS, rotation=35, ha="right", fontsize=9)
     ax2.set_ylabel("Coefficient (signed)")
     ax2.set_title("Feature Direction — Signed LR Coefficient (+ = toward retrieval)")
     ax2.legend()
     ax2.grid(axis="y", alpha=0.3)
 
     plt.tight_layout()
-    plot_path = output_dir / "feature_importance_plot.png"
+    plot_path = output_dir / "feature_importance_diagnostic.png"
     plt.savefig(plot_path, dpi=150)
     plt.close()
     print(f"Saved → {plot_path}")

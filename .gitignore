@@ -1,16 +1,54 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.pytest_tmp/
+.mypy_cache/
+.ipynb_checkpoints/
+
+# Local environments
+.venv/
+venv/
+env/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Local benchmark data and generated processed datasets
 raw_data/
+reproduced_data/
 data/ketod/
 data/dstc9/
 data/dstc11/
+
+# Generated experiment outputs
 outputs/
 results/
-__pycache__/
-*.py[cod]
+runs/
+logs/
+checkpoints/
+models/
+wandb/
+
+# Model and array artifacts
+*.bin
 *.pt
 *.pth
 *.ckpt
 *.safetensors
 *.npy
 *.npz
-.venv/
-.DS_Store
+
+# Temporary files
+tmp/
+temp/
+
+# Local archives
+*.zip
+*.7z
+*.tar
+*.tar.gz

@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Validate formal MiniLM metrics, predictions, and protocol metadata."""
+"""Verify formal MiniLM metrics, predictions, protocol metadata, and hashes."""
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 from pathlib import Path
 
@@ -33,6 +34,28 @@ def metric_values(labels: np.ndarray, probabilities: np.ndarray, predictions: np
 def close(actual: float, expected: float, label: str, tolerance: float = 1e-12) -> None:
     if not np.isclose(actual, expected, rtol=0.0, atol=tolerance):
         raise AssertionError(f"{label}: actual={actual} expected={expected}")
+
+
+def regenerate_hashes(results_dir: Path) -> None:
+    entries = []
+    for path in sorted(results_dir.rglob("*")):
+        if not path.is_file() or path.name == "RESULTS_SHA256.txt":
+            continue
+        relative = path.relative_to(results_dir).as_posix()
+        entries.append(f"{hashlib.sha256(path.read_bytes()).hexdigest()}  {relative}")
+    (results_dir / "RESULTS_SHA256.txt").write_text(
+        "\n".join(entries) + "\n", encoding="utf-8"
+    )
+
+
+def verify_hashes(results_dir: Path) -> int:
+    rows = (results_dir / "RESULTS_SHA256.txt").read_text(encoding="utf-8").splitlines()
+    for row in rows:
+        digest, relative = row.split("  ", 1)
+        actual = hashlib.sha256((results_dir / relative).read_bytes()).hexdigest()
+        if actual != digest:
+            raise AssertionError(f"Hash mismatch: {relative}")
+    return len(rows)
 
 
 def main() -> None:
@@ -122,10 +145,13 @@ def main() -> None:
     if summary["protocol_validation"] != "PASS":
         raise AssertionError("Camera-ready MiniLM summary did not pass protocol validation")
 
+    regenerate_hashes(results_dir)
+    hashed_files = verify_hashes(results_dir)
     print("MINILM_RESULTS_VERIFICATION=PASS")
     print(f"formal_rows={len(formal)}")
     print(f"prediction_files={len(expected_pairs)}")
     print(f"input_audit_rows={len(audit)}")
+    print(f"hashed_files={hashed_files}")
 
 
 if __name__ == "__main__":

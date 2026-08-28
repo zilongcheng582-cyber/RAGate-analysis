@@ -1,25 +1,27 @@
-# Data
+# Data placement and provenance
 
-This repository does not include benchmark data. Download the original
-releases and comply with their terms of use:
+Benchmark data are not redistributed. Obtain KETOD, SGD, DSTC9, and DSTC11
+from the official URLs in [`docs/DATA_ACQUISITION.md`](../docs/DATA_ACQUISITION.md),
+accept their upstream terms, and place the extracted releases below a local
+`raw_data/` directory. The default upstream clone names are supported.
 
-- [KETOD](https://github.com/facebookresearch/ketod)
-- [Schema-Guided Dialogue (SGD)](https://github.com/google-research-datasets/dstc8-schema-guided-dialogue), used with KETOD
-- [DSTC9 Track 1](https://github.com/alexa/alexa-with-dstc9-track1-dataset)
-- [DSTC11 Track 5](https://github.com/alexa/dstc11-track5)
+KETOD depends on two upstream sources: its extracted release must expose
+`train_ketod.json` and `test_ketod.json` somewhere below `raw_data/`, while the
+SGD clone must expose `train/dialogues_*.json` and `test/dialogues_*.json`.
+The official SGD `dev/` directory may remain present but is not consumed by
+this converter. DSTC9 and DSTC11 each require `data/train/{logs,labels}.json`
+and `data/val/{logs,labels}.json` under a repository directory whose component
+contains the `dstc9` or `dstc11` token.
 
-The SGD release is CC BY-SA 4.0. DSTC9 and DSTC11 publish their licence terms
-in their respective repositories; DSTC11 Track 5 data are released under
-CDLA-Sharing 1.0. This repository only contains code derived for the paper and
-does not grant rights to those datasets.
-
-Run the converter from the repository root:
+Run:
 
 ```bash
-python preprocessing/prepare_all.py --raw-root raw_data --output-root data
+python preprocessing/prepare_all.py \
+  --raw-root raw_data \
+  --output-root data
 ```
 
-It creates the ignored files below:
+The resulting layout is:
 
 ```text
 data/
@@ -40,8 +42,32 @@ data/
     └── test_features.csv
 ```
 
-The processed-text files contain `input` and `output`; `input` is accumulated
-dialogue context ending at the evaluated user turn. The feature files contain
-`label` and the ten structural features defined in
-[docs/PROTOCOL.md](../docs/PROTOCOL.md). KETOD uses the released test split;
-DSTC9 and DSTC11 use their released validation splits as held-out evaluation.
+KETOD `test_full.csv`/`test_features.csv` use the released test split. DSTC9
+`test_dstc9.csv`/`test_features.csv` and DSTC11 `val.csv`/`test_features.csv`
+use released validation, not hidden leaderboard test data. The expected
+train/held-out row counts are KETOD 41,939/4,964, DSTC9 71,348/9,663, and
+DSTC11 28,431/4,173; preprocessing enforces these counts.
+
+Processed text files contain accumulated dialogue context ending at the
+evaluated USER turn and an `output` label. Feature files contain `label` plus
+the exact ten columns in [`docs/PROTOCOL.md`](../docs/PROTOCOL.md).
+
+`data_manifest.csv` records hashes and schemas of the private canonical inputs
+used for the formal experiments. To check separately supplied canonical files:
+
+```bash
+python scripts/verify_package.py --verify-data --data-root .
+```
+
+To verify newly generated files structurally (and optionally compare private
+canonical files when available):
+
+```bash
+python preprocessing/verify_preprocessing.py \
+  --generated-root data \
+  --manifest data/data_manifest.csv \
+  --report-dir preprocessing
+```
+
+No raw or generated benchmark payload is committed. The repository MIT License
+does not relicense or grant rights to any upstream benchmark data.

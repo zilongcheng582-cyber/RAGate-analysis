@@ -15,8 +15,28 @@ EXPECTED_ROWS = {"train": 41939, "test": 4964}
 
 def _single_path(root: Path, filename: str) -> Path:
     matches = sorted(path for path in root.rglob(filename) if path.is_file())
-    if len(matches) != 1:
-        raise FileNotFoundError(f"expected exactly one {filename!r} below {root}, found {len(matches)}")
+    if not matches:
+        if filename in {"train_ketod.json", "test_ketod.json"}:
+            archives = sorted(
+                path
+                for path in root.rglob("*.zip")
+                if path.is_file()
+                and "ketod" in "/".join(path.relative_to(root).parts).lower()
+            )
+            archive_hint = (
+                f" A KETOD ZIP appears to still be compressed: {archives[0]}."
+                if archives
+                else ""
+            )
+            raise FileNotFoundError(
+                "KETOD annotations were not found."
+                f"{archive_hint} Extract the upstream KETOD release so that "
+                "train_ketod.json and test_ketod.json are visible below --raw-root."
+            )
+        raise FileNotFoundError(f"expected exactly one {filename!r} below {root}, found 0")
+    if len(matches) > 1:
+        candidates = ", ".join(str(path) for path in matches)
+        raise RuntimeError(f"ambiguous {filename!r} below {root}; candidates: {candidates}")
     return matches[0]
 
 
@@ -146,9 +166,9 @@ def _rows_for_dialogue(dialogue_id: str, turns: list[dict[str, Any]]) -> list[di
 
 
 def prepare(raw_root: Path, output_root: Path) -> dict[str, int]:
-    sgd_root = _sgd_root(raw_root)
     annotation_train = _single_path(raw_root, "train_ketod.json")
     annotation_test = _single_path(raw_root, "test_ketod.json")
+    sgd_root = _sgd_root(raw_root)
     train_annotations = _load_annotations(annotation_train)
     test_annotations = _load_annotations(annotation_test)
     train_ids = {dialogue_id for dialogue_id, _ in train_annotations}

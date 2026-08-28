@@ -19,6 +19,10 @@ on CPU:
 
 ```bash
 python -m venv .venv-lightweight
+source .venv-lightweight/bin/activate
+# Windows PowerShell:
+# .\.venv-lightweight\Scripts\Activate.ps1
+
 python -m pip install -r requirements-lightweight.txt
 ```
 
@@ -26,6 +30,10 @@ MiniLM additionally uses sentence-transformers and PyTorch:
 
 ```bash
 python -m venv .venv-minilm
+source .venv-minilm/bin/activate
+# Windows PowerShell:
+# .\.venv-minilm\Scripts\Activate.ps1
+
 python -m pip install -r requirements-minilm.txt
 ```
 

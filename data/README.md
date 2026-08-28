@@ -66,7 +66,7 @@ canonical files when available):
 python preprocessing/verify_preprocessing.py \
   --generated-root data \
   --manifest data/data_manifest.csv \
-  --report-dir preprocessing
+  --report-dir outputs/preprocessing_verification
 ```
 
 No raw or generated benchmark payload is committed. The repository MIT License

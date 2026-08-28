@@ -9,12 +9,13 @@ BertForSequenceClassification.from_pretrained(
 )
 ```
 
-No fine-tuned checkpoint or model weight is included in this package. On an
+No fine-tuned checkpoint or model weight is included in this repository. On an
 execution machine, Transformers downloads the standard public
 `bert-base-uncased` checkpoint into that machine's Hugging Face cache. The
 binary classification head is newly initialized and trained separately for
 each source dataset with seed 42.
 
-For the camera-ready rerun, record the resolved Transformers version and model
-identifier from `results/bert_ready/run_metadata.json` and retain the server's
-Hugging Face cache or a checksum of the downloaded `model.safetensors`.
+The formal BERT run metadata, including the resolved Transformers and PyTorch
+versions, model identifier, model-config revision, and training configuration,
+is provided in `reference_results/bert/run_metadata.json`. No pretrained or
+fine-tuned weights are redistributed.

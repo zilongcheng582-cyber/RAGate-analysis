@@ -217,7 +217,7 @@ def verify(args: argparse.Namespace) -> dict[str, Any]:
         writer = csv.DictWriter(handle, fieldnames=fields, lineterminator="\r\n")
         writer.writeheader()
         writer.writerows(differences)
-    summary = {"passed": not differences, "results": results, "difference_count": len(differences), "differences_path": "preprocessing/verification_differences.csv"}
+    summary = {"passed": not differences, "results": results, "difference_count": len(differences), "differences_path": diff_path.as_posix()}
     (report_dir / "verification_summary.json").write_text(json.dumps(summary, indent=2, ensure_ascii=False) + "\n", encoding="utf-8", newline="\n")
     if differences:
         raise SystemExit(f"verification failed with {len(differences)} differences; see {diff_path}")
@@ -229,7 +229,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--generated-root", type=Path, required=True)
     parser.add_argument("--manifest", type=Path, required=True)
-    parser.add_argument("--report-dir", type=Path, default=Path(__file__).resolve().parent)
+    parser.add_argument("--report-dir", type=Path, default=Path("outputs/preprocessing_verification"))
     parser.add_argument("--canonical-ketod-root", type=Path)
     parser.add_argument("--canonical-dstc9-root", type=Path)
     parser.add_argument("--canonical-dstc11-root", type=Path)

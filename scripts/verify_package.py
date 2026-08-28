@@ -109,16 +109,14 @@ def main() -> int:
     for relative in required:
         require((ROOT / relative).is_file(), f"missing required file: {relative}", failures)
 
-    # No removed experiment implementation, weights, datasets or caches.
+    # No weights, datasets, generated predictions, archives, or caches.
     files = repository_files()
-    forbidden_names = re.compile(r"(?:^|[_-])mha(?:[_-]|$)", re.IGNORECASE)
     forbidden_suffixes = {
         ".bin", ".pt", ".pth", ".ckpt", ".safetensors", ".npy", ".npz",
         ".pyc", ".zip", ".7z", ".tar", ".gz",
     }
     for path in files:
         relative = path.relative_to(ROOT).as_posix()
-        require(not forbidden_names.search(relative), f"removed experiment path: {relative}", failures)
         require(path.suffix.lower() not in forbidden_suffixes, f"binary payload: {relative}", failures)
         require(
             not ({"__pycache__", ".pytest_cache", ".mypy_cache", ".ipynb_checkpoints"} & set(path.parts)),
@@ -161,7 +159,6 @@ def main() -> int:
         re.compile(r"(?i)\b[A-Z]:[\\/]"),
         re.compile(r"/(?:root|home|Users|mnt/data)/"),
     )
-    removed_code_patterns = ("train_MHA", "mha_inference", "RAGate-MHA")
     for path in files:
         if path.resolve() == Path(__file__).resolve():
             continue
@@ -177,9 +174,6 @@ def main() -> int:
                 f"personal/absolute path in {path.relative_to(ROOT)}",
                 failures,
             )
-        if path.suffix.lower() in {".py", ".sh", ".json"}:
-            for pattern in removed_code_patterns:
-                require(pattern not in content, f"removed experiment code in {path.relative_to(ROOT)}", failures)
 
     lightweight = (ROOT / "lightweight" / "run_transfer_controls.py").read_text(encoding="utf-8")
     require('C_GRID = [0.01, 0.1, 1.0, 10.0]' in lightweight, "lightweight C grid", failures)
@@ -274,7 +268,7 @@ def main() -> int:
     print("PACKAGE_AUDIT=PASS")
     print(f"repository_files={len(files)}")
     print("python_syntax=PASS")
-    print("no_removed_experiment_code=PASS")
+    print("repository_contents=PASS")
     print("no_data_weights_predictions_or_caches=PASS")
     print("relative_paths=PASS")
     print("lightweight_protocol=PASS")

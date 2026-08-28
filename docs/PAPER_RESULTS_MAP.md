@@ -2,7 +2,7 @@
 
 | Paper evidence | Reproduction code | Compact reference output |
 |---|---|---|
-| Dataset statistics and ten feature definitions | `preprocessing/`, `data_processing/` | `data/data_manifest.csv` |
+| Dataset statistics and ten feature definitions | `preprocessing/` | `data/data_manifest.csv` |
 | LR feature ablation table | `lightweight/train_lr_ablation.py` | `reference_results/lightweight/lr_results.csv` |
 | Figure 2: within-dataset normalized absolute standardized LR coefficients | `lightweight/feature_importance_spearman.py`; training-free entry `scripts/make_paper_figures.py` | `reference_results/lightweight/feature_importance.csv`; output `figure2_feature_importance.png` |
 | Feature rankings and Spearman comparison | `lightweight/feature_importance_spearman.py` | `reference_results/lightweight/feature_importance.csv`, `reference_results/lightweight/spearman_rho_results.csv` |
